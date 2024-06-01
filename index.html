@@ -1,0 +1,2401 @@
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <title>Map Status Dashboard</title>
+  <link rel="icon" href="/images/favicon.ico?v=2">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <!-- Mapbox  -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js"></script>
+  <!-- <link href="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script> -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.min.css" rel="stylesheet" />
+  <script async defer src="https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.js"></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css" rel="stylesheet" />
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css' rel='stylesheet' />
+  <script
+    src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+  <link rel="stylesheet"
+    href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+
+  <!-- Font awesome icons -->
+  <script src="https://kit.fontawesome.com/37238cb5fb.js" crossorigin="anonymous"></script>
+
+  <!-- c3 for charting, based on d3 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.css" rel="stylesheet" />
+
+  <!-- Turf.js for map interactions -->
+  <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+
+  <!-- c3 and d3 for charts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.js"></script>
+
+  <!-- tokml -->
+  <!-- <script type="text/javascript" src="https://rawgithub.com/mapbox/tokml/master/tokml.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/tokml@0.4.0/tokml.min.js"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/canvas-toblob/0.1/canvas-toBlob.min.js"></script>
+  <script type="text/javascript" src="//cdn.rawgit.com/eligrey/FileSaver.js/1.3.3/FileSaver.min.js"></script>
+
+  <!--geotoolbox for clip-->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/geotoolbox@1.9.5/dist/index.min.js"></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.0/mapbox-gl-draw.js"></script>
+  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.0/mapbox-gl-draw.css"
+    type="text/css">
+<!-- 
+    <script type="module" src="
+    https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/LanguageControl/LanguageControl.min.js
+    "></script>
+    <link href="
+https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
+" rel="stylesheet">
+  import { RulerControl } from 'mapbox-gl-controls'; -->
+
+
+
+
+  <style>
+    
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      color: white;
+      font-size: 1.5em;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0px;
+    }
+
+    #title {
+      color: blue;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+
+    #title {
+      color: white;
+      position: relative;
+      size: 24px;
+    }
+
+    #navbar-menu {
+      position: relative;
+      color: white;
+      font-size: 1.5em;
+    }
+
+    #navbar {
+      color: white;
+      position: relative;
+    }
+
+    #sidebar {
+      overflow: auto;
+      height: 100%;
+      scrollbar-gutter: stable;
+    }
+
+    #searchbox {
+      max-width: 100% !important;
+    }
+
+    #menu {
+      background: #fff;
+      z-index: 1;
+      border-radius: 3px;
+      border: 1px solid rgba(0, 0, 0, 0.4);
+      font-family: 'Open Sans', sans-serif;
+      display: none;
+    }
+
+    #menu a {
+      font-size: 13px;
+      color: #404040;
+      display: block;
+      margin: 0;
+      padding: 0;
+      padding: 10px;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+      text-align: center;
+    }
+
+    #menu a:last-child {
+      border: none;
+    }
+
+    #menu a:hover {
+      background-color: #f8f8f8;
+      color: black;
+    }
+
+    #menu a.active {
+      background-color: #3a3dee;
+      color: #ffffff;
+    }
+
+    #menu a>div>a {
+      color: #404040;
+    }
+
+    #menu a[class=""]>div>a{
+      background-color: #ffffff;
+      color: #404040
+    }
+
+    #menu a[class=""]>div>a[class="active"]{
+      background-color: #3a3dee;
+      color: #ffffff
+    }
+
+    #menu a[class=""] > div > a[class=""]:hover{
+      background-color: #3a3dee;
+      color: #ffffff
+    }
+
+    #menu a[class="active"] > div > a[class=""]:hover{
+      background-color: #f8f8f8;
+      color: black
+    }
+
+    #menu a.active > div > a:hover{
+      background: #f8f8f8;
+      color: black
+    }
+
+    #menu a.active > div > a[class='']{
+      background: #ffffff;
+      color: #404040
+    }
+
+    #menu a.active > div > a{
+      color: white;
+    }
+
+    #menu a.active > div > a:hover{
+      background: #3913c0;
+      color: #ffffff;
+    }
+
+    #menu a.active:hover {
+      background: #3913c0;
+      color: #ffffff;
+    }
+
+    .mapboxgl-popup {
+      max-width: 400px;
+      font: 14px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      box-shadow: -2px -2px 3px rgba(82, 70, 82, 0.39);
+        }
+
+    #collapse-chart-icon,
+    #collapse-menu-icon,
+    #collapse-legend-icon,
+    #collapse-export-icon,
+    #collapse-query-icon {
+      float: right;
+    }
+
+    #resetButton,
+    #exportbutton,
+    #queryselectbutton1 {
+      background-color: #3a3dee;
+      float: right;
+    }
+
+    #removequerybutton1 {
+      background-color: #3a3dee;
+      position: relative;
+      float: left;
+    }
+
+
+    #legend,
+    #exportoptions,
+    #querybox {
+      display: none;
+    }
+
+
+    #chartdescription {
+      size: 10px
+    }
+
+    #exportoptions {
+      padding-left: 12px;
+    }
+
+    #dropdownselect,
+    #dropdownselect2 {
+      height: 24px;
+      width: 100%;
+      margin-top: 12px;
+    }
+    #chartandbutton{
+      position: relative;
+    }
+
+    #no_data{      
+      position: absolute;
+      top: 45%;
+      left: 25%;
+      text-align: center;
+      font-size: 16px;
+      visibility: hidden;
+      z-index: 1;
+    }
+    .eye{
+       position: absolute;
+       left: 20%;
+       margin-top: 3px;
+      
+
+    }
+    .eye2{
+       position: absolute;
+       left: 17%;
+       margin-top: 12px;
+
+    }
+
+    .legendbox,
+    .chartbox,
+    .queryselect {
+      background-color: white;
+      border-radius: 3px;
+      display: block;
+    }
+
+
+    .legendbox div span {
+      border-radius: 50%;
+      display: inline-block;
+      height: 10px;
+      margin-right: 5px;
+      width: 10px;
+    }
+
+    .mapboxgl-ctrl-geocoder {
+      min-width: 100%;
+    }
+
+    .dropbtn {
+      background-color: yellow;
+      color: black;
+      padding: 10px;
+      font-size: 12px;
+    }
+
+    .dropdown {
+      display: inline-block;
+      position: relative;
+    }
+
+    .dropdown-content {
+      position: absolute;
+      background-color: lightgrey;
+      min-width: 175px;
+      display: none;
+      margin-left: 6px;
+      border-radius: 3px;
+    }
+
+    .dropdown-content a {
+      color: black;
+      padding: 12px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #3913c0;
+      color: white;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+      border-radius: 3px;
+    }
+
+    .dropdown:hover .dropbtn {
+      background-color: grey;
+    }
+
+    .geocoder {
+      width: 100% !important;
+      padding-right: 12px !important;
+    }
+
+    .mapboxgl-ctrl-group {
+      width: 35px !important;
+      height: 35px !important;
+      border-radius: 3px !important;
+      padding-left: 3px !important;
+      padding-top: 3px !important;
+    }
+
+    .mapboxgl-ctrl-group .mapboxgl-ctrl {
+      width: 25px !important;
+      height: 25px !important;
+      padding-left: 0px !important;
+      padding-top: 0px !important;
+      margin-right: 0px !important;
+      box-shadow: none !important;
+
+    }
+
+    .mapbox-gl-draw-polygon {
+      padding-left: 0px !important;
+      padding-top: 0px !important;
+      margin-right: 0px !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      border: none !important;
+      position: inline-block !important;
+    }
+
+    .mapboxgl-ctrl-geocoder {
+      width: 70% !important;
+      padding-right: 12px !important;
+      width: 35px !important;
+      height: 35px !important;
+      border-radius: 3px !important;
+      padding-left: 3px !important;
+      padding-top: 3px !important;
+    }
+
+    .mapboxgl-popup-close-button {
+      padding-right: 3px;
+    }
+
+    .legendSection,
+    .exportSection {
+      font-weight: 600;
+    }
+
+    .legendSubSection,
+    .exportSubSection {
+      font-weight: 400;
+      padding-left: 12px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 6px;
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      border-bottom: 1px dotted black;
+    }
+
+    /* Tooltip text */
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 120px;
+      background-color: black;
+      color: #fff;
+      text-align: center;
+      padding: 5px 5px;
+      border-radius: 6px;
+
+      /* Position the tooltip text - see examples below! */
+      position: absolute;
+      z-index: 1;
+      font-size: 12px;
+    }
+
+    /* Show the tooltip text when you mouse over the tooltip container */
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+    }
+
+    .fa-circle-info {
+      border-bottom: none !important;
+    }
+
+    .tooltip_legend {
+      letter-spacing: .5px;
+      line-height: 24px;
+      font-family: "Open Sans";
+      font-weight: 400;
+      text-transform: none;
+      width: 180px !important;
+      top: 100% !important;
+      left: 50% !important;
+      margin-left: -75px;
+    }
+
+    .icons {
+      height: 22px;
+      width: 18px;
+      float: left;
+      margin-right: 3px;
+    }
+
+    .filteroptions {
+      margin-left: 12px;
+    }
+
+    .toggle {
+      --width: 70px;
+      --height: calc(var(--width) / 3);
+
+      position: relative;
+      display: inline-block;
+      width: var(--width);
+      height: var(--height);
+      border-radius: var(--height);
+      cursor: pointer;
+    }
+
+    .toggle input {
+      display: none;
+    }
+
+    .toggle .slider {
+      position: absolute;
+      top: 3px;
+      left: 36px;
+      width: 100%;
+      height: 100%;
+      border-radius: var(--height);
+      border: 2px solid #BF76F1;
+      /* box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); */
+      transition: all 0.4s ease-in-out;
+    }
+
+    .toggle .slider::before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 2px;
+      width: calc(var(--height)*0.6);
+      height: calc(var(--height)*0.6);
+      border-radius: calc(var(--height) / 2);
+      border: 3px solid #969696;
+      background-color: #dbdbdb;
+      /* box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3); */
+      transition: all 0.4s ease-in-out;
+    }
+
+    .toggle input:checked+.slider {
+      border-color: #2196F3;
+    }
+
+    .toggle input:checked+.slider::before {
+      border-color: #2196F3;
+      background-color: #c6e5ff;
+      transform: translateX(calc(var(--width) - var(--height)));
+    }
+
+    .toggle .labels {
+      position: absolute;
+      top: 3px;
+      left: 36px;
+      right: 3px;
+      width: 100%;
+      height: 100%;
+      color: #4d4d4d;
+      font-size: 12px;
+      font-family: sans-serif;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .toggle .labels::after {
+      content: attr(data-off);
+      position: absolute;
+      right: 6px;
+      opacity: 1;
+      /* text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4); */
+      transition: all 0.4s ease-in-out;
+    }
+
+    .toggle .labels::before {
+      content: attr(data-on);
+      position: absolute;
+      left: 6px;
+      opacity: 0;
+      /* text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.4); */
+      transition: all 0.4s ease-in-out;
+    }
+
+    .toggle input:checked~.labels::after {
+      opacity: 0;
+    }
+
+    .toggle input:checked~.labels::before {
+      opacity: 1;
+    }
+
+    .radiobuttons {
+      float: left;
+      clear: none;
+      margin-bottom: 6px;
+    }
+
+    .queryoptions {
+      display: none;
+    }
+
+#subtitleinfo{
+  color: white;
+  position:absolute;
+  size: 16px;
+  left: 60px;
+  top: 36px;
+  /* position: fixed;
+  bottom: 18;
+  right: 14 */
+}
+
+    #dialogbox {
+      position: absolute;
+      left: 40%;
+      top: 5%;
+      font-size: 16px;
+      background-color: #636066bb;
+      padding: 12px;
+      border-radius: 3px;
+      visibility: hidden;
+      text-align: center;
+    }
+
+    label {
+      float: left;
+      clear: none;
+      display: block;
+    }
+
+    input[type=radio],
+    input.radio {
+      width: 12px;
+      height: 12px;
+      float: left;
+      clear: none;
+    }
+
+    #loader {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 1;
+      width: 120px;
+      height: 120px;
+      margin: -76px 0 0 -76px;
+      border: 16px solid #dcd4e44b;
+      /* opacity: 80%; */
+      border-radius: 50%;
+      border-top: 16px solid #4d34db;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+    }
+
+    #latlng_id {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    #popup_latlng_id {
+      max-width: 150px;
+    }
+    .popup_main_text{
+      font-weight: bolder;
+    }
+    .popup_title {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    @-webkit-keyframes spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+      }
+
+      100% {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Add animation to "page content" */
+    .animate-bottom {
+      position: relative;
+      -webkit-animation-name: animatebottom;
+      -webkit-animation-duration: 1s;
+      animation-name: animatebottom;
+      animation-duration: 1s
+    }
+
+    @-webkit-keyframes animatebottom {
+      from {
+        bottom: -100px;
+        opacity: 0
+      }
+
+      to {
+        bottom: 0px;
+        opacity: 1
+      }
+    }
+
+    @keyframes animatebottom {
+      from {
+        bottom: -100px;
+        opacity: 0
+      }
+
+      to {
+        bottom: 0;
+        opacity: 1
+      }
+    }
+
+    @media only screen and (max-width: 800px) {
+      #sidebar {
+        display: none;
+      }
+    }
+    .box {
+      background: white !important;
+      height: 20px;
+      padding-left: 20px;
+    }
+    #fa-toolbox{
+      background: white;
+    }
+    .toolbox_item{
+      margin-left: 6px;
+
+    }
+    .toolbox_item:hover{
+    background-color: #ecececb7; 
+    box-sizing: border-box;
+    }
+
+
+  </style>
+</head>
+
+<body>
+
+  <div id="map"></div>
+  <div id="loader"></div>
+  <h1 class="txt-bold">
+    <div class="dropdown">
+      <button class=" dropbtncollapse ml6 px12 py12 events-all fa-solid fa-bars"></button>
+      <div class="dropdown-content">
+        <a href="../Home" target="_self" rel="noopener noreferrer">Home
+        </a>
+        <a href="../LV/" target="_self" rel="noopener noreferrer">Las
+          Vegas</a>
+        <a href="../LA/" target="_self" rel="noopener noreferrer">Los Angeles
+        </a>
+        <a href="../PGH/" target="_self" rel="noopener noreferrer">Pittsburgh
+        </a>
+        <a href="../BOS/" target="_self" rel="noopener noreferrer">Boston
+        </a>
+        <a href="../FAQ/" target="_self" rel="noopener noreferrer">FAQ
+        </a>
+      </div>
+    </div>
+    <span id="title"></span>
+    <span id="dialogbox"></span>
+  </h1>
+  <p id = "subtitleinfo"></p>
+
+
+  <div id="sidebar" class="absolute top-ml bottom right z1 w-full w300-ml px12 py12-ml events-all mr6">
+   
+    <div id="searchbox" class="flex-parent flex-parent--row h-auto-ml hmax-full events-all my12">
+      <div id="geocoder" class="geocoder flex-child"></div>
+      <div id="mapboxgl-ctrl-geolocate" class="mapboxgl-ctrl-geolocate flex-child"></div>
+    </div>
+
+    <div id="chartbox"
+      class="flex-parent flex-parent--column h-auto-ml hmax-full bg-white round-ml shadow-darken10 events-all">
+      <div class="px12 py12">
+        <h3 class="txt-bold">
+          <span id="sidebar-title"></span>
+          <button id="collapse-chart-icon" class="collapse ml6 events-all fa-solid fa-chevron-up"></button>
+        </h3>
+        <div id="chartandbutton">
+          <p id = "no_data">No Miles to Show</p>
+          <div>
+            <p id="chartdescription" class="tooltip"><i>Total miles (rounded)</i>
+              <span class="tooltiptext">This chart reflects the number of miles in the dataset rounded to the nearest whole number.</span>
+            </p>
+          </div>
+          <div id="chart" class="mt12"></div>
+
+          <button id="resetButton" class="btn btn--s fr">Next Graph</button>
+
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div id="menubox"
+      class="flex parent viewport-half h-auto-ml legend px12 py12 my12 bg-white hmax-full round-ml shadow-darken10 events-all mt12">
+      <strong>Toggle Layers</strong>
+      <button id="collapse-menu-icon" class="collapse ml6 events-all fa-solid fa-chevron-down"></button>
+      <nav id="menu" class="my12"></nav>
+    </div>
+
+    <div id="legendbox" class="legendbox my12 py12 px12 shadow-darken10">
+      <strong>Legend and Info</strong>
+      <button id="collapse-legend-icon" class="collapse ml6 events-all fa-solid fa-chevron-down"></button>
+      <nav id="legend" class='legendbox clearfix px12 py12'></nav>
+    </div>
+  
+    <div id="exportbox"
+      class="flex-parent flex-parent--column h-auto-ml hmax-full bg-white round-ml shadow-darken10 events-all">
+      <div class="px12 py12">
+        <h3 class="txt-bold">
+          <span><strong>Export Data</strong></span>
+          <button id="collapse-export-icon" class="collapse ml6 events-all fa-solid fa-chevron-down"></button>
+        </h3>
+        <div id="exportoptions" class="mb12">
+          <p> <b>Data Type: </b></p>
+          <label><input type="radio" name="fileformat" id="fileformat_KML" value="KML">KML</label>
+          <label><input type="radio" name="fileformat" id="fileformat_GeoJSON" value="GeoJSON">GeoJSON</label>
+          </p>
+          <br>
+          <div id="exportsuboptions"></div>
+          <div>
+            <button id="exportbutton" class="btn btn--s fr events-all">
+              <a href="#" download></a>Export</button>
+          </div>
+          <!-- <a href="https://gitlab.ci.motional.com/map/map-status-dashboard"><p id="exportdescription" class="tooltip"><i>More info</i></a>
+              <span class="tooltiptext">Due to line clustering, some data may not match what you see on the dashboard exactly. For most precise data, please click to visit the GitLab repository</a></span>
+            </p> -->
+        </div>
+      </div>
+    </div>
+    <div id="box">
+      <div class="flex-parent bg-white round-ml shadow-darken10 events-all mt12" 
+        style="height: 24px; width: 48px; margin-left: 110px">
+        <p class="fa-solid fa-toolbox fa-lg" style="align-items: center; margin-left: 14px; margin-top: 12px;"></p>
+      </div>
+      <div id = "toolbox" class="flex-parent flex-parent--column h-auto-ml hmax-full bg-white round-ml shadow-darken10 events-all mt6" style="background-color: white; visibility: hidden;">
+        <div id="draw-group" style="display: inline-flex; padding: 3px; vertical-align: middle;">
+          <button id="mapbox-gl-draw_polygon" class = "toolbox_item" style="background-color: transparent";></button>
+          <button id="measurebutton" class="toolbox_item fa-solid fa-ruler fa-lg" style="height:32px;  box-shadow:rgba(82, 70, 82, 0.39); border: 2px solid rgb(231, 231, 231); border-radius: 6px; padding: 18px 9px;" title="Measure tool (m)"></button>
+          <button id="mapbox-gl-draw_trash" class="toolbox_item mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_trash"style="height:32px;  box-shadow:rgba(82, 70, 82, 0.39); border: 2px solid rgb(231, 231, 231); border-radius: 6px; padding: 18px 18px;" title="Delete feature"></button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  </div>
+  </div>
+</body>
+<script>
+
+
+  var obj;
+  let length_rfd = 0;
+  let length_b = 0;
+  let length_a = 0;
+  let length_k = 0;
+  let length_driverless_r = 0;
+  let length_driverless_a = 0;
+  let length_ads_r = 0;
+  let length_ads_a = 0;
+  let length_adsmp_r = 0;
+  let length_adsmp_a = 0;
+  let length_uber_r = 0;
+  let length_uber_a = 0;
+
+  fetch('OSM1.geojson')
+    .then(res => res.json())
+    .then(data => {
+      obj = data;
+    })
+    .then(() => {
+      calculateDistance(obj);
+    })
+    .then(() => {
+      const dataSeriesLabel = 'Miles';
+      document.getElementById('sidebar-title').innerHTML = variables.categories[Object.keys(variables.categories)[0]].toString();
+      const chartType = 'bar';
+      var labels = variables.subcategories[0];
+      this.colors = variables.colors[0];
+      this.chart = c3.generate({
+        bindto: '#chart',
+        data: {
+          type: chartType ? chartType : 'bar',
+          columns: [
+            // [Object.keys(variables.categories)[0], calculateDistance(Object.keys(variables.categories)[0], variables.subcategories[0][0]), calculateDistance(Object.keys(variables.categories)[0], variables.subcategories[0][1]), calculateDistance(Object.keys(variables.categories)[0], variables.subcategories[0][2])],
+            [Object.keys(variables.categories)[0], Math.round(length_rfd), Math.round(length_b), Math.round(length_a), Math.round(length_k)],
+
+          ],
+
+          color: function (inColor, data) {
+            if (data.index !== undefined) {
+              return colors[data.index];
+            }
+            return inColor;
+          },
+        },
+
+        axis: {
+          x: {
+            type: 'category',
+            categories: labels,
+            dataSeriesLabel: false
+          },
+        },
+
+        legend: {
+          show: false
+        },
+
+        bar: {
+          width: {
+            ratio: 0.6
+          }
+        },
+
+        tooltip: {
+          contents: function (d, defaultTitleFormat, defaultValueFormat, color) {
+            var $$ = this, config = $$.config,
+              titleFormat = config.tooltip_format_title || defaultTitleFormat,
+              nameFormat = config.tooltip_format_name || function (name) { return name; },
+              valueFormat = config.tooltip_format_value || defaultValueFormat,
+              colorFormat = config.tooltip_format_color || color,
+              text, i, title, value, name, bgcolor;
+            for (i = 0; i < d.length; i++) {
+              if (!(d[i] && (d[i].value || d[i].value === 0))) { continue; }
+
+              if (!text) {
+                title = titleFormat ? titleFormat(d[i].x) : d[i].x;
+                text = "<table class='" + $$.CLASS.tooltip + "'>" + (title || title === 0 ? "<tr><th colspan='2'>" + nameFormat(d[i].name) + "</th></tr>" : "");
+              }
+
+              name = nameFormat(d[i].name);
+              value = valueFormat(d[i].value, d[i].ratio, d[i].id, d[i].index);
+              //   bgcolor = $$.levelColor ? $$.levelColor(d[i].value) : color(d[i].id);
+              bgcolor = $$.colorFormat ? $$.colorFormat(d[i].value) : color(d[i]);
+
+              text += "<tr class='" + $$.CLASS.tooltipName + "-" + d[i].id + "'>";
+              text += "<td class='name'><span style='background-color:" + bgcolor + "'></span>" + title + "</td>";
+              text += "<td class='value'>" + value + "</td>";
+              text += "</tr>";
+            }
+            return text + "</table>";
+          }
+        }
+      });
+      chart.show();
+      let i = 1;
+      document.getElementById('resetButton').onclick = () => {
+        switchChart(i);
+        if (i < Object.keys(variables.categories).length - 1) {
+          i++;
+        }
+        else {
+          i = 0
+        }
+      };
+    })
+
+    .then(() => {
+      function testfilter(properties) {
+        return properties.length > 0;
+      }
+
+      document.getElementById('exportbutton').onclick = function (e) {
+
+
+        // Map checkbox values to mapbox filters
+
+        let layerToFilterMap = {};
+        let categorysubs = [];
+        for (let i in Object.keys(variables.categories)) {
+          for (let e in variables.subcategories[i]) {
+            let this_category = ""
+            this_category = ("Category" + i + "Sub" + e);
+            // categorysubs[i][e]: ['==', ['get', variables.categories[i]], variables.subcategories[i][e]]
+            layerToFilterMap[this_category] = ['==', ['get', Object.keys(variables.categories)[i]], variables.subcategories[i][e]];
+          }
+        }
+        // console.log(layerToFilterMap);
+        // Get all checkbox elements
+        var checkboxes = document.querySelectorAll("input[type=checkbox]");
+
+        // Query for filtered features from mapbox and add to features list
+                
+        var features = [];
+        var filteredFeatures = [];
+        for (const checkbox of checkboxes) {
+          if (checkbox.checked) {
+
+            // var filteredFeatures = map.querySourceFeatures('Data_Source', { filter: layerToFilterMap[checkbox.value] });
+            var filteredFeatures = obj.features.filter((function (el) {
+              // console.log(el.properties); //gets all features properties
+              let v = layerToFilterMap[checkbox.value][1][1];
+              return el.properties[layerToFilterMap[checkbox.value][1][1]] == layerToFilterMap[checkbox.value][2].toString()
+            }));
+
+            features.push(...filteredFeatures);
+          }
+        }
+        //prints category of selected checkbox multiple times
+        var geojson = {
+          type: "FeatureCollection",
+          features: features
+        }
+        // If KML radio button is selected
+        if (document.getElementById("fileformat_KML").checked) {
+          // Create feature collection from list of features up top and convert to KML
+          const kml = tokml(geojson)
+          var filename = "data.kml";
+          var blob = new Blob([kml], {
+            type: "text/plain;charset=utf-8"
+          });
+          saveAs(blob, filename);
+        }
+
+        // Else if GeoJSON radio button is selected
+        else if (document.getElementById("fileformat_GeoJSON").checked) {
+          var filename = "data.geojson"
+          var blob = new Blob([JSON.stringify(geojson, null, 2)], {
+            type: "text/plain;charset=utf-8"
+          });
+          saveAs(blob, filename);
+
+        }
+        else {
+          return;
+        }
+
+      }
+    })
+    .then(() => {
+      var this_mode = '';
+      const polygontool = document.querySelector('[title="Polygon tool (p)');
+      document.getElementById("dialogbox").innerHTML = "Double click to finish polygon <br> Press E to export as KML";
+      const draw = new MapboxDraw({
+        displayControlsDefault: false,
+        // Select which mapbox-gl-draw control buttons to add to the map.
+        controls: {
+          polygon: true,
+          trash: false
+        },
+        // Set mapbox-gl-draw to draw by default.
+        // The user does not have to click the polygon control button first.
+        //  defaultMode: 'draw_polygon'
+      });
+      //  map.addControl(draw);
+
+      // const area = turf.featureCollection(bbox)
+      map.on('draw.create', savebbox);
+      map.on('draw.delete', savebbox);
+
+      map.on('draw.update', savebbox);
+      document.getElementById('mapbox-gl-draw_polygon').appendChild(draw.onAdd(map));
+      //  testicon.classList.add('fa-solid fa-draw-polygon')
+      document.getElementById('mapbox-gl-draw_trash').onclick = () => { 
+        var feature = draw.getSelected();
+          var this_type = feature.features[0].geometry.type;
+          document.getElementById("dialogbox").style.visibility = "hidden";
+          if (this_type == 'Polygon'){
+            this_mode = 'polygon';
+            var feature = draw.getSelectedIds();
+            draw.delete(feature);       
+            savebbox();
+           }
+           else {
+            this_mode = 'linestring';
+            var feature = draw.getSelectedIds();
+            draw.delete(feature);   
+           }
+      };      
+      document.onkeydown = function () {
+        // console.log(document.getElementById("dialogbox").style.visibility);
+
+        document.getElementById("dialogbox").style.visibility = "hidden";
+        const key = event.key;
+        if ((key === "Backspace" || key === "Delete" || key === "Escape" || key === "escape") && document.activeElement.classList != 'mapboxgl-ctrl-geocoder--input') {
+          var feature = draw.getSelected();
+          var this_type = feature.features[0].geometry.type;
+          document.getElementById("dialogbox").style.visibility = "hidden";
+          if (this_type == 'Polygon'){
+            this_mode = 'polygon';
+            var feature = draw.getSelectedIds();
+            draw.delete(feature);       
+            savebbox();
+           }
+           else {
+            this_mode = 'linestring';
+            var feature = draw.getSelectedIds();
+            draw.delete(feature);   
+           }
+        }
+        if (((key === "p" || key === "P") && document.activeElement.classList != 'mapboxgl-ctrl-geocoder--input')) {
+          this_mode = 'polygon';
+          draw.changeMode('draw_polygon');
+          document.getElementById("dialogbox").style.visibility = "visible"
+          document.getElementById("dialogbox").innerHTML = "Double click to finish polygon <br> Press E to export as KML"; 
+         }
+        if ((key === "e" || key === "E") && document.activeElement.classList != 'mapboxgl-ctrl-geocoder--input') {
+          const bbox = draw.getAll();
+          var polygon_arr = [];
+          let linestring_arr = [];
+          for (let feature of bbox.features){
+            // console.log(feature.geometry.type);
+            if (feature.geometry.type == 'Polygon'){
+              polygon_arr.push(feature);
+            }
+            else if (feature.geometry.type == 'LineString'){
+              linestring_arr.push(feature);
+            }
+          }
+
+          var features = draw.getAll().features;
+          // var feature = polygon_arr;
+          document.getElementById("dialogbox").innerHTML = "Double click to finish polygon <br> Press E to export as KML";
+          const bbox_export = draw.getAll();
+          let clipped_export = geotoolbox.clip(obj, { clip: polygon_arr })
+          const mini_kml = tokml(clipped_export);
+          let filename_2 = "data.kml";
+          var blob_2 = new Blob([mini_kml], {
+            type: "text/plain;charset=utf-8"
+          });
+          saveAs(blob_2, filename_2);
+        }
+
+        if ((key === "m" || key === "M") && document.activeElement.classList != 'mapboxgl-ctrl-geocoder--input') {
+          this_mode = 'linestring';
+          measure = true;
+          draw.changeMode('draw_line_string');
+          document.getElementById("dialogbox").style.visibility = "visible";
+          document.getElementById("dialogbox").innerHTML = "Double click to finish line <br> Total Distance: "; 
+
+          map.on('draw.create', getDistance);
+          map.on('draw.update', getDistance);
+          map.on('draw.delete', getDistance);
+          map.on('draw.render', getDistance);
+
+          
+          document.getElementById("map").addEventListener("mousemove", getDistance());        }
+      };
+
+    // function activateMeasure() {
+
+    //   }
+      
+
+      document.getElementById('measurebutton').onclick = () => {
+        this_mode = 'linestring';
+          measure = true;
+          draw.changeMode('draw_line_string');
+          document.getElementById("dialogbox").style.visibility = "visible";
+          document.getElementById("dialogbox").innerHTML = "Double click to finish line <br> Total Distance: "; 
+
+          map.on('draw.create', getDistance);
+          map.on('draw.update', getDistance);
+          map.on('draw.delete', getDistance);
+          map.on('draw.render', getDistance);
+
+          
+          document.getElementById("map").addEventListener("mousemove", getDistance());
+      }
+
+      function getDistance() {
+       var this_line =  {"type": "FeatureCollection", "features": []}
+        const bbox = draw.getAll();
+          var polygon_arr = [];
+          let linestring_arr = [];
+          for (let feature of bbox.features){
+            if (feature.geometry.type == 'Polygon'){
+              polygon_arr.push(feature);
+            }
+            else if (feature.geometry.type == 'LineString'){
+              this_line.features.push(feature);
+              linestring_arr.push(feature);
+            }
+          }
+        // document.getElementById("dialogbox").style.visibility = "visible";
+          // var this_line = draw.getAll();
+          var this_linelength = turf.length(this_line, { units: "miles" });
+          if (this_mode == ''){
+            document.getElementById("dialogbox").style.visibility = "hidden";
+            // console.log('getdistance');
+            
+          }
+            //measure tool is present
+           if (draw.getMode() == 'draw_line_string'){
+              this_mode = 'linestring';
+              document.getElementById("dialogbox").innerHTML = "Double click to finish line <br> Total Distance: " + Math.round(this_linelength * 1000) / 1000 + " miles"; 
+              // console.log('getdistance2');
+
+            }
+            
+            // console.log(draw.getSelected().features[0]);
+           if (draw.getSelected().features[0]){
+              if (draw.getSelected().features[0].geometry.type == 'LineString' && draw.getMode() == 'direct_select'){
+                document.getElementById("dialogbox").style.visibility = "visible";
+                document.getElementById("dialogbox").innerHTML = "Double click to finish line <br> Total Distance: " + Math.round(this_linelength * 1000) / 1000 + " miles"; 
+                // console.log('getdistance3');
+
+              }
+            }
+      }
+      function savebbox() {
+        // console.log(savebbox);
+          const bbox = draw.getAll();
+          var polygon_arr = [];
+          let linestring_arr = [];
+          for (let feature of bbox.features){
+            // console.log(feature.geometry.type);
+            if (feature.geometry.type == 'Polygon'){
+              polygon_arr.push(feature);
+            }
+            else if (feature.geometry.type == 'LineString'){
+              linestring_arr.push(feature);
+            }
+          }
+        // console.log('hello');
+        var feature = draw.getMode();
+        // var this_type = feature.features[0].geometry.type;
+        // || !(draw.getSelected().features[0].geometry.type == 'LineString' || draw.getMode() == 'direct_select')
+        if (draw.getMode() == 'draw_polygon') {
+          this_mode = 'polygon';
+          // if ((draw.getMode() != 'direct_select' && draw.getSelected().features[0].geometry.type == 'LineString'))
+          document.getElementById("dialogbox").style.visibility = "hidden";
+          var testarray = [];
+          let thischartname = document.getElementById('sidebar-title').innerHTML;
+          for (let i in Object.values(variables.categories)) {
+            testarray.push(Object.values(variables.categories)[i]);
+          }
+          let thischartindex = testarray.indexOf(thischartname);
+
+
+          if (polygon_arr.length > 0) {
+            // console.log(bbox.features)
+            let clipped = geotoolbox.clip(obj, { clip: polygon_arr })
+            calculateDistance(clipped);
+            these_columns = [];
+            switchChart(thischartindex);
+          }
+          else {
+            // console.log('polygon length < 0');
+            // console.log(bbox.features)
+            these_columns = [];
+            calculateDistance(obj);
+            these_columns = [];
+            switchChart(thischartindex);
+          }
+        }
+         else if (this_mode == 'polygon'){
+          // if (draw.getSelected().features[0].geometry.type != 'LineString' && (draw.getMode() == 'direct_select' || draw.getMode() == 'simple_select')) {
+            var testarray = [];
+            let thischartname = document.getElementById('sidebar-title').innerHTML;
+            for (let i in Object.values(variables.categories)) {
+              testarray.push(Object.values(variables.categories)[i]);
+            }
+            let thischartindex = testarray.indexOf(thischartname);
+            // const bbox = draw.getAll();
+            if (polygon_arr.length > 0) {
+              // console.log('bbox length > 0')
+              let clipped = geotoolbox.clip(obj, { clip: polygon_arr })
+              calculateDistance(clipped);
+              these_columns = [];
+              switchChart(thischartindex);
+            }
+            else {
+              // console.log('else');
+              these_columns = [];
+              calculateDistance(obj);
+              switchChart(thischartindex);
+            }
+          }
+
+      }
+    })
+
+  function calculateDistance(this_data) {
+    length_rfd = 0;
+    length_b = 0;
+    length_a = 0;
+    length_k = 0;
+    length_driverless_r = 0;
+    length_driverless_a = 0;
+    length_ads_r = 0;
+    length_ads_a = 0;
+    length_adsmp_r = 0;
+    length_adsmp_a = 0;
+    length_uber_r = 0;
+    length_uber_a = 0;
+    for (let i in this_data.features) {
+      if (this_data.features[i].properties['Starting Point'] == 'Alewife') {
+        // length_rfd2 += (obj.features[i].properties.lengthmile);
+        length_rfd += turf.length(this_data.features[i], { units: "miles" });
+      }
+      if (this_data.features[i].properties['Starting Point'] == 'Andrew') {
+        // length_b2 += (obj.features[i].properties.lengthmile);
+        length_b += turf.length(this_data.features[i], { units: "miles" });
+      }
+      if (this_data.features[i].properties['Starting Point'] == 'South Station') {
+        // length_a2 += (obj.features[i].properties.lengthmile);
+        length_a += turf.length(this_data.features[i], { units: "miles" });
+      }
+      if (this_data.features[i].properties['Starting Point'] == 'Kenmore') {
+        // length_a2 += (obj.features[i].properties.lengthmile);
+        length_k += turf.length(this_data.features[i], { units: "miles" });
+      }
+      if (this_data.features[i].properties["Route Number"] == '351') {
+        // length_driverless_r2 += (obj.features[i].properties.lengthmile);
+        length_driverless_r += turf.length(this_data.features[i], { units: "miles" });
+      }
+      if (this_data.features[i].properties["Route Number"] == '201') {
+        // length_driverless_a2 += (obj.features[i].properties.lengthmile);
+        length_driverless_a += turf.length(this_data.features[i], { units: "miles" });
+      }
+      if (this_data.features[i].properties.ADS == 'Requested') {
+        // length_ads_r2 += (obj.features[i].properties.lengthmile);
+        length_ads_r += turf.length(this_data.features[i], { units: "miles" });
+      }
+      if (this_data.features[i].properties.ADS == 'Approved') {
+        // length_ads_a2 += (obj.features[i].properties.lengthmile);
+        length_ads_a += turf.length(this_data.features[i], { units: "miles" });
+      }
+      if (this_data.features[i].properties['ADS-MP'] == 'Requested') {
+        // length_adsmp_r2 += (obj.features[i].properties.lengthmile);
+        length_adsmp_r += turf.length(this_data.features[i], { units: "miles" });
+      }
+      if (this_data.features[i].properties['ADS-MP'] == 'Approved') {
+        // length_adsmp_a2 += (obj.features[i].properties.lengthmile);
+        length_adsmp_a += turf.length(this_data.features[i], { units: "miles" });
+      }
+      if (this_data.features[i].properties.UberEats_St == 'Requested') {
+        // length_adsmp_r2 += (obj.features[i].properties.lengthmile);
+        length_uber_r += turf.length(this_data.features[i], { units: "miles" });
+      }
+      if (this_data.features[i].properties.UberEats_St == 'Approved') {
+        // length_adsmp_a2 += (obj.features[i].properties.lengthmile);
+        length_uber_a += turf.length(this_data.features[i], { units: "miles" });
+      }
+    }
+  }
+
+  document.getElementById('box').onmouseover = () => {
+    document.getElementById('toolbox').style.visibility = 'visible';
+  }
+  document.getElementById('box').onmouseleave = () => {
+    document.getElementById('toolbox').style.visibility = 'hidden';
+  }
+  // replace "Dashboard" with deisred title of dashboard - shown in white text in top left corner
+  // make sure your data file is called "features.geojson" *** Mapbox only supports geojsons, so only that file type is supported ***
+  const title = "Mock Dashboard";
+
+  const variables = {
+    //replace "Street Name" with whatever variable is the main identifying variable -- it will be bold in popups
+    maincategory: "ROUTE_DESC",
+
+    // replace "Mapping Status", "NHTSA Status", ... with the main categories you want displayed on the map. This should match the field name in QGIS or the left side of the properties list in the geojson 
+    // note this is case sensitive, and the layers will appear in top down order on the map (currently, mapping Status is at the top and NHTSA Date 1 is at the bottom)
+    //these categories will appear visualized on the map, and the mileage will be reflected in the graph
+    // do not delete any commas or brackets
+    // categories: ["Mapping Status",  "UberEats Status", "NHTSA Status"],
+    categories: {
+      "Starting Point": "Starting Point",
+      "Route Number": "Route Number",
+      // "UberEats_St": "UberEats Status",
+      // "Test_St": "Test Status",
+      // // "Driverless": "Driverless",
+      // // "ADS-MP": "ADS for the Public",
+      // "ADS": "ADS",
+    },
+
+    // replace [["Ready for Auto Drive", "Basemapped", ...], ["Anotation", "Validation", ...]] with the subcategories you want displayed on the map. This should match the attribute value under the field name in QGIS or the right side of the properties list in the geojson
+    // do not delete any commas or brackets unless you have fewer than 4 main categories
+    subcategories: [["Alewife", "Andrew", "South Station", "Kenmore"],
+    ["351", "201"]
+    // ["Requested", "Approved"],
+    // // ["Requested", "Approved"], ["Requested", "Approved"], 
+    // ["1", "2", "3", "4"],
+    // ["Requested", "Approved"]
+  ],
+
+    // replace [[ "#3a3dee", "#b80f0f" ...], ["#f29d36", ...] with the hex values of the colors you'd like for each subcategory
+    colors: [['#8491A3', '#BCEBCB', '#87D68D', '#358600'],
+
+     ['#E26D5C', '#723D46'],
+    // ["#D496A7", "#5D576B", "#6CD4FF", "#FE938C"], 
+    // ['#09d7cd', '#60dc18']
+  ],
+
+    // replace [3, 4 ...] with the desired line widths for each main category -- units are in pixels
+    linewidths: [3, 4
+    // 4, 4,
+      // 5, 8,
+    ],
+
+    // replace the lat/long coordinates with wherever you'd like your map centered on load in format [Longitude, Latitude] 
+    center_start: [-71.0708429434655, 42.397657604519765],
+
+    // fill in the following lines if you have a points component of your geojson. maincategory_points is the field name and subcategories_points is if you have multiple attributes for each point
+    maincategory_points: ["Merchant Sites"],
+    subcategories_points: [["Merchant Site"]],
+
+    // these variables will appear in the popup, and will be queryable in the query features widget
+    // note that there might be more variables here than in the "categories" array above. That is expected. 
+    // you can also leave the maincategory out of this array. Just start with the categories you'd like to be unbolded in the popup
+    popup_categories: {
+      "Starting Point": "Starting Point",
+      "Route Number": "Route Number"
+      // "UberEats_St": "UberEats Status",
+      // "Test_St": "Test St",
+      // "ADS-MP": "ADS for the Public",
+      // "ADS": "ADS",
+    },
+    more_info: ["Layer Description 1", "Layer Description 2"
+      // "UberEats Status shows our approval status specifically with Uber for delivering food",
+    //   //      "Roads that are approved for Driverless are permitted to be driven without an operator in the driver's seat under the condition that there is a safety operator in the passenger seat as well as lead and chase vehicles", 
+    //   // "ADS-MP stands for Autonomous Driving System for Members of the Public. These are roads that are approved to be driven with members of the public in the vehicle.",
+    //  "Test St",
+    //   "Autonomous Driving System approval status for employees and other relevant personnel. This does not include regular members of the public",
+    //   "Points"
+  ]
+  }
+
+
+  document.getElementById("subtitleinfo").innerHTML = "Note: Due to NDA with Motional, this dashboard reflects a different dataset, <br />basemap, and rewritten code. Some features may vary from original";
+
+  //do not edit after this
+
+  // mapboxgl.accessToken = 'pk.eyJ1IjoibGNvdXNpbnMtbW90aW9uYWwiLCJhIjoiY2w5ZTVwYzZzMGQzMDN1bXdjd2U4ZjFueiJ9.T2TdgLvdztfyHA18YsBHNw';
+  mapboxgl.accessToken = 'pk.eyJ1IjoibGNvdXNpbnMxNyIsImEiOiJjbHd2Y2szMTIwb2xrMmlxN2Z2NHZrNmhpIn0.C3UHmcQXIdKGj51-mFXkmQ';
+  const map = new mapboxgl.Map({
+    container: 'map',
+    // style: 'mapbox://styles/lcousins-motional/cl6cbwhav000h14piw8vhru42',
+    style: 'mapbox://styles/mapbox/dark-v11',
+    center: variables.center_start,
+    zoom: 10,
+    scrollZoom: true,
+    boxZoom: true,
+    doubleClickZoom: true,
+    preserveDrawingBuffer: true
+  });
+
+
+  let varnum = [];
+
+  map.on('load', () => {
+    const layers = map.getStyle().layers;
+    let firstSymbolId;
+    for (const layer of layers) {
+      if (layer.type === 'symbol') {
+        firstSymbolId = layer.id;
+        break;
+      }
+    }
+
+    // creates variable id names
+    for (let i in Object.values(variables.categories)) {
+      varnum[i] = Object.values(variables.categories)[i].replace(/ /g, "_");
+    }
+
+
+    // *** REPLACE 'features.geojson' with data file name -- must be a geojson ***
+    var testData = map.addSource('Data_Source', {
+      'type': 'geojson',
+      'data': 'OSM1.geojson',
+      'generateId': true,
+    });
+    map.addSource('Merchant_Sites', {
+      'type': 'geojson',
+      'data': 'merchantsites.geojson',
+      'generateId': true,
+    })
+
+    const collator = ["collator", { "case-sensitive": false, "diacritic-sensitive": false }];
+    // adds line layers dynamically - adds one point layer
+    for (let i in Object.keys(variables.categories)) {
+      let catandcolors = [];
+      for (let e in variables.subcategories[i]) {
+        catandcolors.push(variables.subcategories[i][e]);
+        catandcolors.push(variables.colors[i][e]);
+      }
+
+      map.addLayer(
+        {
+          'id': varnum[i],
+          'type': 'line',
+          'source': 'Data_Source',
+          'sourceLayer': 'Object.keys(variables.categories)[i]',
+          'layout': {
+            'visibility': 'visible',
+            'line-cap': 'round'
+          },
+          'paint': {
+            'line-color': ['match', ['get', Object.keys(variables.categories)[i]], ...catandcolors, 'transparent'],
+            'line-width': variables.linewidths[i],
+            // 'line-dasharray': [0, 2]
+          },
+          tolerance: 1
+        });
+    }
+
+    // map.addLayer(
+    //   {
+    //     'id': 'clearLayer',
+    //     'type': 'line',
+    //     'source': 'Data_Source',
+    //     'sourceLayer': 'clearLayer',
+    //     'layout': {
+    //       'visibility': 'visible',
+    //       'line-cap': 'round'
+    //     },
+    //     'paint': {
+    //       'line-color': 'transparent',
+    //       'line-width': 10
+    //     },
+    //     'filter': ['==', '$type', 'LineString'],
+    //   });
+
+
+
+    map.loadImage(
+      'https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
+      (error, image) => {
+        if (error) throw error;
+        if (variables.maincategory_points) {
+
+          map.addImage('icon', image);
+          map.addLayer({
+            'id': 'Merchant_Sites',
+            'type': 'symbol',
+            'source': 'Merchant_Sites', // reference the data source
+            'layout': {
+              'icon-allow-overlap': true,
+              'icon-image': 'icon', // reference the image
+              'icon-size': 0.5,
+              'visibility': 'visible'
+            },
+            'filter': ['==', '$type', 'Point'],
+          });
+        }
+
+
+      }
+
+    );
+  //   for (var i = Object.keys(variables.categories).length - 1; i >= 0; i--) {
+  //     map.moveLayer(varnum[i], 'road-label');
+  //   }
+  //   map.moveLayer('clearLayer', 'road-label');
+  });
+
+  // import { RulerControl } from 'mapbox-gl-controls';
+//   map.addControl(new RulerControl(), 'top-right');
+// map.on('ruler.on', () => console.log('ruler: on'));
+// map.on('ruler.off', () => console.log('ruler: off'));
+
+// // with miles:
+// map.addControl(new RulerControl({
+//   units: 'miles',
+//   labelFormat: n => `${n.toFixed(2)} ml`,
+// }), 'top-right');
+
+  // Add the control to the map.
+    const coordinatesGeocoder = function (query) {
+      // Match anything which looks like
+      // decimal degrees coordinate pair.
+      const matches = query.match(
+        /^[ ]*(?:Lat: )?(-?\d+\.?\d*)[, ]+(?:Lng: )?(-?\d+\.?\d*)[ ]*$/i
+      );
+      if (!matches) {
+        return null;
+      }
+
+      function coordinateFeature(lng, lat) {
+        return {
+          center: [lng, lat],
+          geometry: {
+            type: 'Point',
+            coordinates: [lng, lat]
+          },
+          place_name: 'Lat: ' + lat + ' Lng: ' + lng,
+          place_type: ['coordinate'],
+          properties: {},
+          type: 'Feature'
+        };
+      }
+
+      const coord1 = Number(matches[1]);
+      const coord2 = Number(matches[2]);
+      const geocodes = [];
+
+      if (coord1 < -90 || coord1 > 90) {
+        // must be lng, lat
+        geocodes.push(coordinateFeature(coord1, coord2));
+      }
+
+      if (coord2 < -90 || coord2 > 90) {
+        // must be lat, lng
+        geocodes.push(coordinateFeature(coord2, coord1));
+      }
+
+      if (geocodes.length === 0) {
+        // else could be either lng, lat or lat, lng
+        geocodes.push(coordinateFeature(coord1, coord2));
+        geocodes.push(coordinateFeature(coord2, coord1));
+      }
+
+      return geocodes;
+    };
+
+    // Add the control to the map.
+    // map.addControl(
+      const geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        localGeocoder: coordinatesGeocoder,
+        mapboxgl: mapboxgl,
+        reverseGeocode: true
+      })
+
+
+ 
+    // );
+  document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+
+ 
+  const geolocate =
+    new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      // When active the map will receive updates to the device's location as it changes.
+      trackUserLocation: true,
+      // Draw an arrow next to the location dot to indicate which direction the device is heading.
+      showUserHeading: true
+    });
+
+
+  document.getElementById('mapboxgl-ctrl-geolocate').appendChild(geolocate.onAdd(map));
+
+
+ // Popup on click
+  map.on('contextmenu', (e) => {
+      var latlng = (JSON.stringify(e.lngLat.lat + ", "+ e.lngLat.lng)).toString().replace(/['"]+/g, '');
+      navigator.clipboard.writeText(latlng);      
+      const popup_latlng = new mapboxgl.Popup().setLngLat(e.lngLat).setHTML("<div id = 'popup_latlng_id' <strong> <i id = 'latlng_id'>" + "Copied to clipboard!" + "</i> </strong>" + "<br>" + latlng + '</div').addTo(map);
+      const popups = document.getElementsByClassName("mapboxgl-popup");
+
+    if (popups.length > 1) {
+
+      popups[0].remove();
+
+    }
+    // console.log(popup_latlng);
+    });
+
+
+  // map.on('click', 'clearLayer', (e) => {
+  //   var coordinates = e.lngLat;
+  //   var Main_Category = e.features[0].properties[variables.maincategory];
+
+
+  //   let these_subvariables = [];
+  //   let popup_content = [];
+  //   let isNotAllNull = false;
+  //   for (let i in Object.values(variables.popup_categories)) {
+  //     these_subvariables.push(e.features[0].properties[Object.keys(variables.popup_categories)[i]]);
+  //     if (Main_Category == 'null') {
+  //       Main_Category = 'Unnamed Road';
+  //     }
+  //     if (these_subvariables[i] == undefined || these_subvariables[i] == 'null' || these_subvariables[i] == null) {
+  //       e.features[0].properties[Object.keys(variables.popup_categories)[i]] = '';
+  //     }
+  //     popup_content.push(('<span class = "popup_main_text">' + Object.values(variables.popup_categories)[i]) + ": " + '</span>' + e.features[0].properties[(Object.keys(variables.popup_categories)[i])] + "<br>");
+  //     // if (these_subvariables[i] != '' && these_subvariables[i] != 'undefined' && these_subvariables[i] != 'null') {
+  //       if (these_subvariables[0] != null || these_subvariables[1] != null){
+  //       isNotAllNull = true;
+  //     }
+
+  //   }
+
+
+  //   while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+  //     coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+  //   }
+
+    // if ((isNotAllNull)) {
+    //   const popup1 = new mapboxgl.Popup().setLngLat(coordinates).setHTML("<strong class = 'popup_title'>" + Main_Category + "</strong>" + "<br>" + popup_content.toString().replace(/,/g, "")).addTo(map);
+    // }
+  // });
+
+
+  map.on('click', 'Merchant_Sites', (e) => {
+    const coordinates = e.lngLat;
+    const Point_Name = e.features[0].properties[variables.subcategories_points];
+    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+      coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    }
+
+    const popup3 = new mapboxgl.Popup().setLngLat(coordinates).setHTML("<strong>" + variables.subcategories_points + "</strong>" + "<br>" + Point_Name).addTo(map);
+  })
+
+  map.on("click", (e) => { 
+    var isnull = true; 
+    let visibleLayers = varnum.filter( 
+      (l) => map.queryRenderedFeatures({ layers: [l] }).length > 0 ); 
+      var point_bbox = [ [e.point.x - 5, e.point.y - 5], [e.point.x + 5, e.point.y + 5], ];
+    var this_point = map.queryRenderedFeatures(point_bbox, { 
+      layers: visibleLayers, 
+    });
+   this_point = this_point[0]; 
+  //  console.log(visibleLayers);
+   // console.log(this_point); 
+   // var this_point = turf.buffer(this_point, 20, { units: "meters" });
+    for (let i of visibleLayers) { 
+      if (this_point) { 
+        var tempvisiblelayers = 
+        // getKeyByValue( 
+          (variables.categories, 
+          i.replace(/_/g, " ") )
+          // ); 
+          if ( this_point.properties[tempvisiblelayers] != null && this_point.properties[tempvisiblelayers] != undefined && this_point.properties[tempvisiblelayers] != "" ) { 
+            isnull = false; 
+          } 
+          // console.log(this_point.properties[tempvisiblelayers]); 
+        } 
+      }
+    
+      const popup = Object.values(variables.popup_categories);
+
+ if (this_point && !isnull) { var coordinates = e.lngLat; 
+  var Main_Category = this_point.properties[variables.maincategory];
+ let these_subvariables = []; 
+ let popup_content = []; 
+ let isNotAllNull = false; 
+ for (let i in Object.values(variables.popup_categories)) { 
+  let this_item = this_point.properties[Object.keys(variables.popup_categories)[i]]; 
+  // if (isValidDate(this_item)){ this_item = new Date(this_item).toLocaleDateString("en-us", { weekday: "short", year: "numeric", month: "short", day: "numeric", }); }
+ // shows main category (road name) in popup 
+ these_subvariables.push(this_item); if (Main_Category == "null") { Main_Category = "Unnamed Road"; }
+ // take any null or undefined values and make the popup show blank 
+ if ( these_subvariables[i] == null || these_subvariables[i] == "undefined" || these_subvariables[i] == "null" ) { 
+  this_item = ""; 
+}
+ popup_content.push( '<span class = "popup_main_text">' + popup[i] + ": " + "</span>" + this_item + "<br>" );
+ // hides popups for roads that have all null values 
+ if ( these_subvariables[i] != "null" && these_subvariables[i] != "" && these_subvariables[i] != "undefined" && these_subvariables[i] != undefined ) { isNotAllNull = true; } }
+ while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) { coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360; }
+ if (isNotAllNull) { const popup1 = new mapboxgl.Popup({ closeOnClick: true, clickTolerance: 12, }) .setLngLat(coordinates) .setHTML( "<strong class = 'popup_title'>" + Main_Category + "</strong>" + "<br>" + popup_content.toString().replace(/,/g, "") ) .addTo(map); } }});
+// popups for polygon
+// if (polygon.length > 0) { map.on("click", polygon[0].replace(/ /g, "_"), (e) => { var obj = e.features[0].properties; const coordinates = e.lngLat; const Massport_Polygon = e.features[0].properties[0]; while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) { coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360; } const popup3 = new mapboxgl.Popup() .setLngLat(coordinates) .setHTML( "<strong class = 'popup_title'>" + "Owned By Massport" + "</strong>" + "<br>" + "No Auto Drive Allowed" ) .addTo(map); });}
+//popups for points
+// if (points_layer.length > 0) { map.on("click", points_layer[0].replace(/ /g, "_"), (e) => { const coordinates = e.lngLat; const Point_Name = e.features[0].properties[variables.subcategories_points]; while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) { coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360; } const popup4 = new mapboxgl.Popup() .setLngLat(coordinates) .setHTML( "<strong class = 'popup_title'>" + points_layer[0].toString() + "</strong>" + "<br>" + Point_Name ) .addTo(map); });
+
+
+
+  //toggle layers
+  map.on('idle', () => {
+    var measure = false;
+    var polygontool = document.querySelector('[title="Polygon tool (p)');
+    var testmeasure = document.getElementById('map');
+    // if (draw){
+    //   console.log('drawn');
+    // }
+    if (polygontool.classList.contains('active'))  {
+      this_mode = 'polygon';
+      // console.log('polygon tool active');
+      document.getElementById('dialogbox').style.visibility = 'visible';
+      document.getElementById("dialogbox").innerHTML = "Double click to finish polygon <br> Press E to export as KML";
+      // console.log('polygon tool active');
+    }
+    // if (testmeasure.classList.contains('mode-draw_line_string')){
+    //   document.getElementById('dialogbox').style.visibility = 'visible';
+    //   // document.getElementById("dialogbox").innerHTML = "Double click to finish line <br> Total Distance: "; 
+    //   // console.log('measure tool active')
+    //  }
+    // else{
+    //   document.getElementById('dialogbox').style.visibility = 'hidden';
+    //   console.log('neither tool active')
+    // }
+    document.getElementById("loader").style.display = "none";
+    // If these two layers were not added to the map, abort
+    // for (let i in variables.categories) {
+    //   if (!map.getLayer(variables.categories[i])) {
+    //     return;
+    //   }
+    // }
+
+
+    // Enumerate ids of the layers.
+    const toggleableLayerIds = [...varnum, 'Merchant_Sites'];
+
+    // Set up the corresponding toggle button for each layer.
+    for (const id of toggleableLayerIds) {
+      // Skip layers that already have a button set up.
+      if (document.getElementById(id)) {
+        continue;
+      }
+      // Create a link
+      const link = document.createElement('a');
+      link.id = id;
+      link.href = '#';
+      link.textContent = id.replace(/_/g, ' ');
+      link.className = 'active';
+      const toggle_chevron = document.createElement('button');
+      toggle_chevron.classList = 'fa-solid fa-chevron-down';
+      toggle_chevron.style = 'float: right; padding: 6px';
+      var eyeicon2 = document.createElement('div');
+      eyeicon2.className = 'eye2 fa-regular fa-eye fa-lg';
+      link.appendChild(eyeicon2);
+      if (link.id != 'Merchant_Sites') {
+
+        link.appendChild(toggle_chevron);
+      }
+      // Show or hide layer when the toggle is clicked.
+      link.onclick = function (e) {
+        const clickedLayer = this.id;
+        e.preventDefault();
+        e.stopPropagation();
+
+        const visibility = map.getLayoutProperty(
+          clickedLayer,
+          'visibility'
+        );
+
+        // Toggle layer visibility by changing the layout object's visibility property.
+        if (visibility === 'visible') {
+          map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+          this.className = '';
+          this.children[0].classList.remove('fa-eye');
+          this.children[0].classList.add('fa-eye-slash');
+          if (document.getElementById(this.id).children.length > 1){
+            for (let i of this.children[2].children){
+              i.className = '';
+              i.children[0].classList.remove('fa-eye');
+              i.children[0].classList.add('fa-eye-slash');
+            }
+          }
+        } else {
+          this.className = 'active';
+          this.children[0].classList.remove('fa-eye-slash');
+          this.children[0].classList.add('fa-eye');
+          if (document.getElementById(this.id).children.length > 1){
+            this.children[0].classList.remove('fa-eye-slash');
+          this.children[0].classList.add('fa-eye');
+            // console.log(this);
+            for (let i of this.children[2].children){
+              i.className = 'active';
+              i.children[0].classList.remove('fa-eye-slash');
+              i.children[0].classList.add('fa-eye');            }
+          }
+          map.setLayoutProperty(
+            clickedLayer,
+            'visibility',
+            'visible'
+          );
+          map.setFilter(clickedLayer, null);
+        }
+      };
+      // console.log(sublink_holder);
+      let clickNumber = 0;
+      toggle_chevron.onclick = function (e) {
+        e.stopPropagation();
+        let these_options = toggle_chevron.nextElementSibling.id;
+        if (clickNumber === 0) {
+          // console.log(these_options);
+          toggle_chevron.classList.remove('fa-chevron-down');
+          toggle_chevron.classList.add('fa-chevron-up');
+          document.getElementById(these_options).style.display = 'block';          
+          clickNumber = 1;
+        }
+        else {
+          toggle_chevron.classList.remove('fa-chevron-up');
+          toggle_chevron.classList.add('fa-chevron-down');
+          document.getElementById(these_options).style.display = 'none';
+          clickNumber = 0;
+
+        }
+      }
+      if (link.id != 'Merchant_Sites') {
+
+        let these_subcategories = variables.subcategories[varnum.indexOf(link.id)];
+        var sublink_holder = document.createElement('div');
+        let list_to_filter = [];
+        let this_filter_2 = [];
+        for (const id2 of these_subcategories) {
+          let hidden = false;
+          var sublink = document.createElement('a');
+          var eyeicon = document.createElement('div');
+          eyeicon.className = 'eye fa-regular fa-eye';
+          sublink.id = id2;
+          sublink.href = '#';
+          sublink.textContent = id2.replace(/_/g, ' ');
+          sublink.className = 'active';
+          sublink.style.height = '36px';
+          sublink_holder.appendChild(sublink);
+          sublink_holder.id = link.id + "_options";
+          sublink_holder.style.display = 'none';
+          sublink.appendChild(eyeicon);
+          sublink.onclick = function (e) {
+            let this_filter_2 = [];
+            e.stopPropagation();
+            let this_status = document.getElementById(link.id).className;
+            if (this.className == 'active'){
+              this.className = '';
+              this.children[0].classList.remove('fa-eye');
+              this.children[0].classList.add('fa-eye-slash');
+            }
+            else {
+              this.className = 'active';
+              this.children[0].classList.remove('fa-eye-slash');
+              this.children[0].classList.add('fa-eye');    
+             } 
+             const clickedLayer = this.parentElement.parentElement.id;
+            const visibility = map.getLayoutProperty(
+              clickedLayer,
+              'visibility'
+            );
+            if (this.parentElement.parentElement.classList == '') {
+              let list_to_filter_1 = [];
+              let ele = document.getElementsByClassName('active');
+              for (var i = 0; i < ele.length; i++) {
+                if (ele[i].parentElement.id == this.parentElement.id) {
+                  list_to_filter_1.push(ele[i].id);
+                }
+              }
+              list_to_filter.push(id2 + id);
+
+              for (let i of list_to_filter_1) {
+                this_filter_2.push(['==', Object.keys(variables.categories).find(key => variables.categories[key] === id.replace(/_/g, ' ')), i],)
+              }
+              this_filter = [
+                'any',
+                ...this_filter_2
+              ];
+              map.setLayoutProperty(clickedLayer, 'visibility', 'visible')
+              map.setFilter(id, this_filter);
+            }
+
+            else if (this.parentElement.parentElement.classList == 'active') {
+              let list_to_filter_1 = [];
+              let ele = document.getElementsByClassName('active');
+              for (var i = 0; i < ele.length; i++) {
+                if (ele[i].parentElement.id == this.parentElement.id) {
+                  list_to_filter_1.push(ele[i].id);
+                }
+              }
+              if (!list_to_filter.includes(id2 + id)) {
+                list_to_filter.push(id2 + id);
+              }
+              for (let i of list_to_filter_1) {
+                this_filter_2.push(['==', Object.keys(variables.categories).find(key => variables.categories[key] === id.replace(/_/g, ' ')), i],)
+              }
+              this_filter = [
+                'any',
+                ...this_filter_2
+              ]
+              map.setFilter(id, this_filter);
+              all_items = [];
+            }
+          }
+          if (!document.getElementById(sublink_holder.id)) {
+            link.appendChild(sublink_holder);
+          }
+        }
+      }
+      const layers = document.getElementById('menu');
+      layers.appendChild(link);
+    }
+  });
+
+  //switch chart
+
+  let these_columns = [];
+  function switchChart(i) {
+    var graphTitle = Object.keys(variables.categories)[i].toString();
+    document.getElementById('sidebar-title').innerHTML = graphTitle;
+    graphTitle = variables.categories[Object.keys(variables.categories)[i]];
+    this.colors = variables.colors[i];
+
+    if (graphTitle == 'Route Number') {
+      these_columns = [Object.keys(variables.categories)[i], Math.round(length_driverless_r), Math.round(length_driverless_a)]
+    }
+    else if (graphTitle == 'UberEats Status') {
+      these_columns = [Object.keys(variables.categories)[i], Math.round(length_uber_r), Math.round(length_uber_a)]
+    }
+    else if (graphTitle == 'ADS for the Public') {
+      these_columns = [Object.keys(variables.categories)[i], Math.round(length_adsmp_r), Math.round(length_adsmp_a)]
+    }
+    else if (graphTitle == 'ADS') {
+      these_columns = [Object.keys(variables.categories)[i], Math.round(length_ads_r), Math.round(length_ads_a)]
+    }
+    else if (graphTitle == 'Starting Point') {
+      these_columns = [Object.keys(variables.categories)[i], Math.round(length_rfd), Math.round(length_b), Math.round(length_a), Math.round(length_k)]
+    }
+    this.chart.load({
+      bindto: '#chart',
+      unload: true,    
+      columns: [
+        these_columns
+      ],      
+      color: function (inColor, data) {
+        if (data.index !== undefined) {
+          return colors[data.index];
+        }
+        return inColor;
+      },
+
+      categories: variables.subcategories[i]
+      ,
+    });
+
+    let testnull;
+    let testarr = [];
+    document.getElementById('sidebar-title').innerHTML = graphTitle;
+  
+    for (let i = 1; i < these_columns.length; i++) {
+      testarr.push(these_columns[i]);
+      if (testarr.every(item => item === 0)) {
+        testnull = true;
+        document.getElementById("no_data").style.visibility= 'visible'
+      }
+      else {
+        testnull = false;
+        document.getElementById("no_data").style.visibility = 'hidden';
+      }
+    }
+  }
+
+
+
+
+  document.getElementById('collapse-chart-icon').onclick = () => {
+    var x = document.getElementById("chartandbutton");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+      document.getElementById("collapse-chart-icon").classList.remove("fa-chevron-down");
+      document.getElementById("collapse-chart-icon").classList.add("fa-chevron-up");
+      chart.show();
+    } else {
+      x.style.display = "none";
+      document.getElementById("collapse-chart-icon").classList.remove("fa-chevron-up");
+      document.getElementById("collapse-chart-icon").classList.add("fa-chevron-down");
+    }
+  };
+  document.getElementById('collapse-export-icon').onclick = () => {
+    togglewidget('collapse-export-icon', 'exportoptions');
+  }
+  document.getElementById('collapse-legend-icon').onclick = () => {
+    togglewidget('collapse-legend-icon', 'legend');
+  }
+  document.getElementById('collapse-menu-icon').onclick = () => {
+    togglewidget('collapse-menu-icon', 'menu');
+  }
+  // document.getElementById('collapse-query-icon').onclick = () => {
+  //   togglewidget('collapse-query-icon', 'querybox');
+  // }
+  //toggles widget with starting position of closed
+  function togglewidget(icon, content) {
+    var x = document.getElementById(content);
+    if (x.style.display === "block") {
+      x.style.display = "none";
+      document.getElementById(icon).classList.remove("fa-chevron-up");
+      document.getElementById(icon).classList.add("fa-chevron-down");
+
+    } else {
+      x.style.display = "block";
+      document.getElementById(icon).classList.remove("fa-chevron-down");
+      document.getElementById(icon).classList.add("fa-chevron-up");
+    }
+  }
+
+  
+  // function calculateDistance(targetLayer, target) {
+  //   countedfeatures = [];
+  //   totalDist = 0;
+  //   options = {
+  //     units: 'miles'
+  //   };
+  //   const features = map.querySourceFeatures('Data_Source', {
+  //     sourceLayer: targetLayer
+  //   });
+  //   for (let feature = 0; feature < features.length; feature++) {
+  //     if (!countedfeatures.includes(turf.length(features[feature]))) {
+  //       countedfeatures.push(turf.length(features[feature]));
+
+  //       if (features[feature].properties[targetLayer] == target) {
+  //         dist = turf.length(features[feature], options);
+  //         totalDist = totalDist + dist;
+  //       }
+  //     }
+  //   };
+  //   return Math.round(totalDist);
+  // }
+
+</script>
+
+<script>
+  document.getElementById("title").innerHTML = title;
+  document.getElementById("dialogbox").innerHTML = "Double click to finish polygon <br> Press E to export as KML";
+
+  for (let i in Object.keys(variables.categories)) {
+    //legend
+    var legend_section = document.createElement('ul');
+    const node = document.createTextNode(Object.keys(variables.categories)[i]);
+    var info_hover = document.createElement('button');
+    info_hover.className = "fa-solid fa-circle-info ml6 tooltip";
+    var info_details = document.createElement('span')
+    info_details.innerHTML = variables.more_info[i];
+    // var info_details = document.createTextNode(variables.more_info[i]);
+    info_details.className = "tooltiptext tooltip_legend";
+    info_hover.appendChild(info_details);
+
+    legend_section.appendChild(node);
+    legend_section.appendChild(info_hover);
+
+
+    // info_hover.addEventListener("click", hideText(), false); //where func is your function name
+    legend_section.className = "legendSection";
+    const element = document.getElementById("legend");
+    element.appendChild(legend_section);
+
+
+    //export
+    const element2 = document.getElementById("exportsuboptions");
+    var export_section = document.createElement('ul');
+    const node2 = document.createTextNode(Object.values(variables.categories)[i]);
+    export_section.appendChild(node2);
+    export_section.className = "exportSection";
+    element2.appendChild(export_section);
+
+
+    for (let e in variables.subcategories[i]) {
+      //legend
+      const subnode = document.createTextNode(variables.subcategories[i][e]);
+      var part_legend = document.createElement('div');
+      var dot = document.createElement('span');
+
+      part_legend.appendChild(dot);
+      part_legend.appendChild(subnode);
+
+      part_legend.className = "legendSubSection";
+      dot.className = "dot";
+      dot.style.backgroundColor = variables.colors[i][e];
+      legend_section.appendChild(part_legend);
+      element.appendChild(legend_section);
+
+
+
+      //export
+      const subnode2 = document.createTextNode(" " + variables.subcategories[i][e]);
+      var part_export = document.createElement('ul');
+      part_export.className = "exportSubSection";
+      element2.appendChild(part_export);
+      var checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.value = "Category" + i + "Sub" + e;
+      checkbox.id = "Category" + i + "Sub" + e;
+      var label = document.createElement('label');
+      label.htmlFor = "Category" + i + "Sub" + e;
+      element2.appendChild(checkbox);
+      element2.appendChild(subnode2);
+    }
+  }
+  for (let i in variables.maincategory_points) {
+    var legend_section3 = document.createElement('ul');
+    const node3 = document.createTextNode(variables.maincategory_points[i]);
+    legend_section3.appendChild(node3);
+    legend_section3.className = "legendSection";
+    const element3 = document.getElementById("legend");
+    element3.appendChild(legend_section3);
+
+    for (let e in variables.subcategories_points) {
+      const subnode3 = document.createTextNode(variables.subcategories_points[i][e]);
+      var part_legend3 = document.createElement('div');
+      var line = document.createElement('p');
+      var icon = document.createElement('img');
+      icon.id = 'legend-merchant-sites';
+      icon.src = 'https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png'
+
+      part_legend3.appendChild(icon);
+      part_legend3.appendChild(subnode3);
+
+      part_legend3.className = "legendSubSection";
+      line.appendChild(part_legend3);
+      icon.className = "icons";
+      // icon.style.backgroundColor = variables.colors[i][e];
+      legend_section3.appendChild(part_legend3);
+      element3.appendChild(legend_section3);
+    }
+  }
+
+  // for (let i in Object.values(variables.popup_categories)) {
+  //   let option = document.createElement("option");
+  //   let option2 = document.createElement("option");
+
+  //   // option.setAttribute(key, variables[key]);
+  //   let optionText = document.createTextNode(Object.keys(variables.popup_categories)[i]);
+  //   option.appendChild(optionText);
+  //   let optionText2 = document.createTextNode(Object.keys(variables.popup_categories)[i]);
+  //   option2.appendChild(optionText2);
+
+  //   document.getElementById('dropdownselect').appendChild(option);
+  //   document.getElementById('dropdownselect2').appendChild(option2);
+  // }
+
+  // document.getElementById("queryselectbutton1").onclick = () => {
+  //   filterLayers();
+  // }
+
+  function filterLayers() {
+
+    var var1null = ['==', ['get', document.getElementById('dropdownselect').value], ''];
+      var var1undef = ["in", ["get", document.getElementById('dropdownselect').value], "null"];
+      var var1notnull = ['!=', ['get', document.getElementById('dropdownselect').value], ''];
+      var var1notundef = ["!=", ["in", ["get", document.getElementById('dropdownselect').value], "null"], true];
+
+      var var2null = ['==', ['get', document.getElementById('dropdownselect2').value], ''];
+      var var2undef = ["in", ["get", document.getElementById('dropdownselect2').value], "null"];
+      var var2notnull = ['!=', ['get', document.getElementById('dropdownselect2').value], ''];
+      var var2notundef = ["!=", ["in", ["get", document.getElementById('dropdownselect2').value], "null"], true];
+
+    for (let i in Object.keys(variables.popup_categories)) {
+      if (document.getElementById('null1').checked && document.getElementById('null2').checked && !document.getElementById("filtertoggle").checked) {
+        //console.log("1st null or 2nd null");
+        map.setFilter(varnum[i], ['any', ['any', var1null, var1undef], ['any', var2null, var2undef]]);
+      }
+      else if (document.getElementById('notnull1').checked && document.getElementById('notnull2').checked && !document.getElementById("filtertoggle").checked) {
+        //console.log("1st not null or 2nd not null")
+        // map.setFilter(varnum[i], ['any', var1notnull || var1notundef, var2notnull || var2notundef]);
+        map.setFilter(varnum[i], ['any', var1notnull && var1notundef, ['any', var1null, var2undef]]);
+
+      }
+      else if (document.getElementById('null1').checked && document.getElementById('notnull2').checked && !document.getElementById("filtertoggle").checked) {
+        //console.log("1st null or 2nd not null")
+        map.setFilter(varnum[i], ['any', var1null || var1undef, var2notnull || var2notundef]);
+      }
+      else if (document.getElementById('notnull1').checked && document.getElementById('null2').checked && !document.getElementById("filtertoggle").checked) {
+        //console.log("1st not null or 2nd null)")
+        map.setFilter(varnum[i], ['any', var1notnull || var1notundef, var2null || var2undef]);
+      }
+      else if (document.getElementById('null1').checked && document.getElementById('null2').checked && document.getElementById("filtertoggle").checked) {
+        //console.log("1st null and 2nd null")
+        map.setFilter(varnum[i], ['any', ['all', var1null, var2null], ['all', var1undef, var2undef], ['all', var1null, var2undef], ['all', var1undef, var2null]]);
+      }
+      else if (document.getElementById('notnull1').checked && document.getElementById('notnull2').checked && document.getElementById("filtertoggle").checked) {
+        //console.log("1st not null and 2nd not null")
+        map.setFilter(varnum[i], ['all', var1notnull, var1notundef, var2notnull, var2notundef]);
+      }
+      else if (document.getElementById('null1').checked && document.getElementById('notnull2').checked && document.getElementById("filtertoggle").checked) {
+        //console.log("1st null and 2nd not null")
+        // map.setFilter(varnum[i], ['all', var1null || var1undef, var2notnull || var2notundef]);
+        map.setFilter(varnum[i], ['all', var2notnull && var2notundef, ['any', var2null, var1undef]]);
+
+      }
+      else if (document.getElementById('notnull1').checked && document.getElementById('null2').checked && document.getElementById("filtertoggle").checked) {
+        map.setFilter(varnum[i], ['all', var1notnull && var1notundef, ['any', var1null, var2undef]]);
+        //console.log("1st not null and 2nd null")
+      }
+      else if (document.getElementById('notnull1').checked && !document.getElementById('notnull2').checked && !document.getElementById('null2').checked) {
+        // console.log("1st not null and 2nd unchecked");
+        map.setFilter(varnum[i], ['all', var1notnull, var1notundef]);
+      }
+      else if (document.getElementById('null2').checked && !document.getElementById('null1').checked && !document.getElementById('notnull1').checked) {
+        // console.log("1st unchecked and 2nd null");
+        map.setFilter(varnum[i], ['any', var2null, var2undef]);
+      }
+      else if (!document.getElementById('notnull1').checked && document.getElementById('notnull2').checked && !document.getElementById('null1').checked) {
+        // console.log("1st unchecked and 2nd not null");
+        map.setFilter(varnum[i], ['any', var2notnull, var2notundef]);
+      }
+      else if (!document.getElementById('notnull2').checked && document.getElementById('null1').checked && !document.getElementById('null2').checked) {
+        // console.log("2nd unchecked and 1st null");
+        map.setFilter(varnum[i], ['any', var1null, var1undef]);
+      }
+      else {
+        return;
+      }
+    }
+  }
+
+
+
+
+  // document.getElementById("removequerybutton1").onclick = () => {
+  //   removeFilters();
+  //   document.getElementById("dropdownselect").selectedIndex = 0;
+  //   document.getElementById("dropdownselect2").selectedIndex = 0;
+  //   document.getElementById("null1").checked = false;
+  //   document.getElementById("null2").checked = false;
+  //   document.getElementById("notnull1").checked = false;
+  //   document.getElementById("notnull2").checked = false;
+
+  // }
+  function removeFilters() {
+    for (let i in Object.keys(variables.categories)) {
+      map.setFilter(varnum[i], null);
+    }
+  }
+
+function measureDistance(){
+const distanceContainer = document.getElementById('dialogbox');
+document.getElementById("dialogbox").innerHTML = "Total Distance: ";
+document.getElementById('dialogbox').style.visibility = 'visible';
+
+const draw2 = new MapboxDraw({
+        displayControlsDefault: false,
+        // Select which mapbox-gl-draw control buttons to add to the map.
+        controls: {
+          line_string: true,
+          trash: false
+        },
+        // Set mapbox-gl-draw to draw by default.
+        // The user does not have to click the polygon control button first.
+        //  defaultMode: 'draw_polygon'
+      });
+      draw2.modes.DRAW_LINE_STRING === 'draw_line_string'
+
+
+// const geojson2 = {
+// 'type': 'FeatureCollection',
+// 'features': []
+// };
+
+// const linestring = {
+// 'type': 'Feature',
+// 'geometry': {
+// 'type': 'LineString',
+// 'coordinates': []
+// }
+// };
+
+// map.on('load', () => {
+// map.addSource('geojson', {
+// 'type': 'geojson',
+// 'data': geojson2
+// });
+ 
+// // Add styles to the map
+// map.addLayer({
+// id: 'measure-points',
+// type: 'circle',
+// source: 'geojson2',
+// paint: {
+// 'circle-radius': 5,
+// 'circle-color': '#000'
+// },
+// filter: ['in', '$type', 'Point']
+// });
+// map.addLayer({
+// id: 'measure-lines',
+// type: 'line',
+// source: 'geojson2',
+// layout: {
+// 'line-cap': 'round',
+// 'line-join': 'round'
+// },
+// paint: {
+// 'line-color': '#000',
+// 'line-width': 2.5
+// },
+// filter: ['in', '$type', 'LineString']
+// });
+ 
+// map.on('click', (e) => {
+// const features = map.queryRenderedFeatures(e.point, {
+// layers: ['measure-points']
+// });
+ 
+// // Remove the linestring from the group
+// // so we can redraw it based on the points collection.
+// if (geojson.features.length > 1) geojson.features.pop();
+ 
+// // Clear the distance container to populate it with a new value.
+// distanceContainer.innerHTML = '';
+ 
+// // If a feature was clicked, remove it from the map.
+// if (features.length) {
+// const id = features[0].properties.id;
+// geojson.features = geojson.features.filter(
+// (point) => point.properties.id !== id
+// );
+// } else {
+// const point = {
+// 'type': 'Feature',
+// 'geometry': {
+// 'type': 'Point',
+// 'coordinates': [e.lngLat.lng, e.lngLat.lat]
+// },
+// 'properties': {
+// 'id': String(new Date().getTime())
+// }
+// };
+ 
+// geojson.features.push(point);
+// }
+ 
+// if (geojson.features.length > 1) {
+// linestring.geometry.coordinates = geojson.features.map(
+// (point) => point.geometry.coordinates
+// );
+ 
+// geojson.features.push(linestring);
+ 
+// // Populate the distanceContainer with total distance
+// const value = document.createElement('pre');
+// const distance = turf.length(linestring);
+// value.textContent = `Total distance: ${distance.toLocaleString()}km`;
+// distanceContainer.appendChild(value);
+// console.log(distance);
+// }
+ 
+// map.getSource('geojson').setData(geojson);
+// });
+// });
+ 
+// map.on('mousemove', (e) => {
+// const features = map.queryRenderedFeatures(e.point, {
+// layers: ['measure-points']
+// });
+// // Change the cursor to a pointer when hovering over a point on the map.
+// // Otherwise cursor is a crosshair.
+// map.getCanvas().style.cursor = features.length
+// ? 'pointer'
+// : 'crosshair';
+// });
+// console.log(distance);
+}
+
+
+</script>
+</body>
+
+</html>
