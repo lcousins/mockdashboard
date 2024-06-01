@@ -1,0 +1,102 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+            "Merchant Site": "Site 1"
+        },
+        "geometry": {
+          "coordinates": [
+            -71.0763703515378,
+            42.33118061540608
+          ],
+          "type": "Point"
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+            "Merchant Site": "Site 2"
+
+        },
+        "geometry": {
+          "coordinates": [
+            -71.05641825599433,
+            42.35482414424297
+          ],
+          "type": "Point"
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+            "Merchant Site": "Site 3"
+
+        },
+        "geometry": {
+          "coordinates": [
+            -71.0621606093412,
+            42.358617161566315
+          ],
+          "type": "Point"
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+            "Merchant Site": "Site 4"
+
+        },
+        "geometry": {
+          "coordinates": [
+            -71.05396731231762,
+            42.3632849896257
+          ],
+          "type": "Point"
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+            "Merchant Site": "Site 5"
+
+        },
+        "geometry": {
+          "coordinates": [
+            -71.05515910583472,
+            42.358955008461805
+          ],
+          "type": "Point"
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+            "Merchant Site": "Site 6"
+
+        },
+        "geometry": {
+          "coordinates": [
+            -71.06209737863936,
+            42.361399739740335
+          ],
+          "type": "Point"
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+            "Merchant Site": "Site 7"
+
+        },
+        "geometry": {
+          "coordinates": [
+            -71.0840786287388,
+            42.361810058287375
+          ],
+          "type": "Point"
+        }
+      }
+    ]
+  }
