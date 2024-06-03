@@ -3,7 +3,7 @@
 <head>
 
   <meta charset="utf-8">
-  <title>Map Status Dashboard</title>
+  <title>Mock Dashboard Dashboard</title>
   <link rel="icon" href="/images/favicon.ico?v=2">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
   <!-- Mapbox  -->
@@ -713,13 +713,12 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
       <div class="dropdown-content">
         <a href="../Home" target="_self" rel="noopener noreferrer">Home
         </a>
-        <a href="../LV/" target="_self" rel="noopener noreferrer">Las
-          Vegas</a>
-        <a href="../LA/" target="_self" rel="noopener noreferrer">Los Angeles
+        <a href="../city1/" target="_self" rel="noopener noreferrer">City 1</a>
+        <a href="../city2/" target="_self" rel="noopener noreferrer">City 2
         </a>
-        <a href="../PGH/" target="_self" rel="noopener noreferrer">Pittsburgh
+        <a href="../city3/" target="_self" rel="noopener noreferrer">City 3
         </a>
-        <a href="../BOS/" target="_self" rel="noopener noreferrer">Boston
+        <a href="../city4/" target="_self" rel="noopener noreferrer">City 4
         </a>
         <a href="../FAQ/" target="_self" rel="noopener noreferrer">FAQ
         </a>
@@ -1337,10 +1336,10 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
   ],
 
     // replace [[ "#3a3dee", "#b80f0f" ...], ["#f29d36", ...] with the hex values of the colors you'd like for each subcategory
-    colors: [['#DEB986', '#DB6C79', '#A7112F'],
+    colors: [     ['#F3B700', '#E57C04', "#F63E02"],
+      ['#0197F6', '#F194B4', '#FFB100'],
+     ['#92DCE5', '#7C7C7C','#D64933' ],
 
-     ['#E26D5C', '#723D46','#593D3B' ],
-     ['#748CAB', '#3E5C76', "#5E7CE2"]
     // ["#D496A7", "#5D576B", "#6CD4FF", "#FE938C"], 
     // ['#09d7cd', '#60dc18']
   ],
@@ -1355,8 +1354,8 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
     center_start: [-71.07078523875542, 42.35482680948809],
 
     // fill in the following lines if you have a points component of your geojson. maincategory_points is the field name and subcategories_points is if you have multiple attributes for each point
-    maincategory_points: ["Merchant Sites"],
-    subcategories_points: [["Merchant Site"]],
+    maincategory_points: ["Points Layer"],
+    subcategories_points: [["Point Name"]],
 
     // these variables will appear in the popup, and will be queryable in the query features widget
     // note that there might be more variables here than in the "categories" array above. That is expected. 
@@ -1424,9 +1423,9 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
       'data': 'OSMfeatures1.geojson',
       'generateId': true,
     });
-    map.addSource('Merchant_Sites', {
+    map.addSource('Points_Layer', {
       'type': 'geojson',
-      'data': 'merchantsites.geojson',
+      'data': 'pointslayer.geojson',
       'generateId': true,
     })
 
@@ -1485,9 +1484,9 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
 
           map.addImage('icon', image);
           map.addLayer({
-            'id': 'Merchant_Sites',
+            'id': 'Points_Layer',
             'type': 'symbol',
-            'source': 'Merchant_Sites', // reference the data source
+            'source': 'Points_Layer', // reference the data source
             'layout': {
               'icon-allow-overlap': true,
               'icon-image': 'icon', // reference the image
@@ -1648,7 +1647,7 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
   // });
 
 
-  map.on('click', 'Merchant_Sites', (e) => {
+  map.on('click', 'Points_Layer', (e) => {
     const coordinates = e.lngLat;
     const Point_Name = e.features[0].properties[variables.subcategories_points];
     while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -1746,7 +1745,7 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
 
 
     // Enumerate ids of the layers.
-    const toggleableLayerIds = [...varnum, 'Merchant_Sites'];
+    const toggleableLayerIds = [...varnum, 'Points_Layer'];
 
     // Set up the corresponding toggle button for each layer.
     for (const id of toggleableLayerIds) {
@@ -1766,7 +1765,7 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
       var eyeicon2 = document.createElement('div');
       eyeicon2.className = 'eye2 fa-regular fa-eye fa-lg';
       link.appendChild(eyeicon2);
-      if (link.id != 'Merchant_Sites') {
+      if (link.id != 'Points_Layer') {
 
         link.appendChild(toggle_chevron);
       }
@@ -1835,7 +1834,7 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
 
         }
       }
-      if (link.id != 'Merchant_Sites') {
+      if (link.id != 'Points_Layer') {
 
         let these_subcategories = variables.subcategories[varnum.indexOf(link.id)];
         var sublink_holder = document.createElement('div');
