@@ -4,7 +4,7 @@
       {
         "type": "Feature",
         "properties": {
-            "Merchant Site": "Site 1"
+            "Point Name": "Site 1"
         },
         "geometry": {
           "coordinates": [
@@ -17,7 +17,7 @@
       {
         "type": "Feature",
         "properties": {
-            "Merchant Site": "Site 2"
+            "Point Name": "Site 2"
 
         },
         "geometry": {
@@ -31,7 +31,7 @@
       {
         "type": "Feature",
         "properties": {
-            "Merchant Site": "Site 3"
+            "Point Name": "Site 3"
 
         },
         "geometry": {
@@ -45,7 +45,7 @@
       {
         "type": "Feature",
         "properties": {
-            "Merchant Site": "Site 4"
+            "Point Name": "Site 4"
 
         },
         "geometry": {
@@ -59,7 +59,7 @@
       {
         "type": "Feature",
         "properties": {
-            "Merchant Site": "Site 5"
+            "Point Name": "Site 5"
 
         },
         "geometry": {
@@ -73,7 +73,7 @@
       {
         "type": "Feature",
         "properties": {
-            "Merchant Site": "Site 6"
+            "Point Name": "Site 6"
 
         },
         "geometry": {
@@ -87,7 +87,7 @@
       {
         "type": "Feature",
         "properties": {
-            "Merchant Site": "Site 7"
+            "Point Name": "Site 7"
 
         },
         "geometry": {
