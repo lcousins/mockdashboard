@@ -821,20 +821,20 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
 
 
   var obj;
-  let length_rfd = 0;
-  let length_b = 0;
-  let length_a = 0;
-  let length_k = 0;
-  let length_driverless_r = 0;
-  let length_driverless_a = 0;
-  let length_ads_r = 0;
-  let length_ads_a = 0;
-  let length_adsmp_r = 0;
-  let length_adsmp_a = 0;
-  let length_uber_r = 0;
-  let length_uber_a = 0;
+  let length_11 = 0;
+  let length_12 = 0;
+  let length_13 = 0;
+  let length_21 = 0;
+  let length_22 = 0;
+  let length_23 = 0;
+  let length_31 = 0;
+  let length_32 = 0;
+  let length_33 = 0;
+  // let length_adsmp_a = 0;
+  // let length_uber_r = 0;
+  // let length_uber_a = 0;
 
-  fetch('OSM1.geojson')
+  fetch('OSMfeatures1.geojson')
     .then(res => res.json())
     .then(data => {
       obj = data;
@@ -854,7 +854,7 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
           type: chartType ? chartType : 'bar',
           columns: [
             // [Object.keys(variables.categories)[0], calculateDistance(Object.keys(variables.categories)[0], variables.subcategories[0][0]), calculateDistance(Object.keys(variables.categories)[0], variables.subcategories[0][1]), calculateDistance(Object.keys(variables.categories)[0], variables.subcategories[0][2])],
-            [Object.keys(variables.categories)[0], Math.round(length_rfd), Math.round(length_b), Math.round(length_a), Math.round(length_k)],
+            [Object.keys(variables.categories)[0], Math.round(length_11), Math.round(length_12), Math.round(length_13)],
 
           ],
 
@@ -1244,67 +1244,54 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
     })
 
   function calculateDistance(this_data) {
-    length_rfd = 0;
-    length_b = 0;
-    length_a = 0;
-    length_k = 0;
-    length_driverless_r = 0;
-    length_driverless_a = 0;
-    length_ads_r = 0;
-    length_ads_a = 0;
-    length_adsmp_r = 0;
-    length_adsmp_a = 0;
-    length_uber_r = 0;
-    length_uber_a = 0;
+    length_11 = 0;
+    length_12 = 0;
+    length_13 = 0;
+    length_21 = 0;
+    length_22 = 0;
+    length_23 = 0;
+    length_31 = 0;
+    length_32 = 0;
+    length_33 = 0;
+   
     for (let i in this_data.features) {
-      if (this_data.features[i].properties['Starting Point'] == 'Alewife') {
+      if (this_data.features[i].properties['Layer 1'] == 'Category 1') {
         // length_rfd2 += (obj.features[i].properties.lengthmile);
-        length_rfd += turf.length(this_data.features[i], { units: "miles" });
+        length_11 += turf.length(this_data.features[i], { units: "miles" });
       }
-      if (this_data.features[i].properties['Starting Point'] == 'Andrew') {
+      if (this_data.features[i].properties['Layer 1'] == 'Category 2') {
         // length_b2 += (obj.features[i].properties.lengthmile);
-        length_b += turf.length(this_data.features[i], { units: "miles" });
+        length_12 += turf.length(this_data.features[i], { units: "miles" });
       }
-      if (this_data.features[i].properties['Starting Point'] == 'South Station') {
+      if (this_data.features[i].properties['Layer 1'] == 'Category 3') {
         // length_a2 += (obj.features[i].properties.lengthmile);
-        length_a += turf.length(this_data.features[i], { units: "miles" });
+        length_13 += turf.length(this_data.features[i], { units: "miles" });
       }
-      if (this_data.features[i].properties['Starting Point'] == 'Kenmore') {
+      if (this_data.features[i].properties['Layer 2'] == 'Category 1') {
         // length_a2 += (obj.features[i].properties.lengthmile);
-        length_k += turf.length(this_data.features[i], { units: "miles" });
+        length_21 += turf.length(this_data.features[i], { units: "miles" });
       }
-      if (this_data.features[i].properties["Route Number"] == '351') {
+      if (this_data.features[i].properties["Layer 2"] == 'Category 2') {
         // length_driverless_r2 += (obj.features[i].properties.lengthmile);
-        length_driverless_r += turf.length(this_data.features[i], { units: "miles" });
+        length_22 += turf.length(this_data.features[i], { units: "miles" });
       }
-      if (this_data.features[i].properties["Route Number"] == '201') {
+      if (this_data.features[i].properties["Layer 2"] == 'Category 3') {
         // length_driverless_a2 += (obj.features[i].properties.lengthmile);
-        length_driverless_a += turf.length(this_data.features[i], { units: "miles" });
+        length_23 += turf.length(this_data.features[i], { units: "miles" });
       }
-      if (this_data.features[i].properties.ADS == 'Requested') {
+      if (this_data.features[i].properties["Layer 3"] == 'Category 1') {
         // length_ads_r2 += (obj.features[i].properties.lengthmile);
-        length_ads_r += turf.length(this_data.features[i], { units: "miles" });
+        length_31 += turf.length(this_data.features[i], { units: "miles" });
       }
-      if (this_data.features[i].properties.ADS == 'Approved') {
+      if (this_data.features[i].properties["Layer 3"] == 'Category 2') {
         // length_ads_a2 += (obj.features[i].properties.lengthmile);
-        length_ads_a += turf.length(this_data.features[i], { units: "miles" });
+        length_32 += turf.length(this_data.features[i], { units: "miles" });
       }
-      if (this_data.features[i].properties['ADS-MP'] == 'Requested') {
+      if (this_data.features[i].properties['Layer 3'] == 'Category 3') {
         // length_adsmp_r2 += (obj.features[i].properties.lengthmile);
-        length_adsmp_r += turf.length(this_data.features[i], { units: "miles" });
+        length_33 += turf.length(this_data.features[i], { units: "miles" });
       }
-      if (this_data.features[i].properties['ADS-MP'] == 'Approved') {
-        // length_adsmp_a2 += (obj.features[i].properties.lengthmile);
-        length_adsmp_a += turf.length(this_data.features[i], { units: "miles" });
-      }
-      if (this_data.features[i].properties.UberEats_St == 'Requested') {
-        // length_adsmp_r2 += (obj.features[i].properties.lengthmile);
-        length_uber_r += turf.length(this_data.features[i], { units: "miles" });
-      }
-      if (this_data.features[i].properties.UberEats_St == 'Approved') {
-        // length_adsmp_a2 += (obj.features[i].properties.lengthmile);
-        length_uber_a += turf.length(this_data.features[i], { units: "miles" });
-      }
+      
     }
   }
 
@@ -1320,7 +1307,7 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
 
   const variables = {
     //replace "Street Name" with whatever variable is the main identifying variable -- it will be bold in popups
-    maincategory: "ROUTE_DESC",
+    maincategory: "name",
 
     // replace "Mapping Status", "NHTSA Status", ... with the main categories you want displayed on the map. This should match the field name in QGIS or the left side of the properties list in the geojson 
     // note this is case sensitive, and the layers will appear in top down order on the map (currently, mapping Status is at the top and NHTSA Date 1 is at the bottom)
@@ -1328,8 +1315,9 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
     // do not delete any commas or brackets
     // categories: ["Mapping Status",  "UberEats Status", "NHTSA Status"],
     categories: {
-      "Starting Point": "Starting Point",
-      "Route Number": "Route Number",
+      "Layer 1": "Layer 1",
+      "Layer 2": "Layer 2",
+      "Layer 3": "Layer 3",
       // "UberEats_St": "UberEats Status",
       // "Test_St": "Test Status",
       // // "Driverless": "Driverless",
@@ -1339,8 +1327,9 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
 
     // replace [["Ready for Auto Drive", "Basemapped", ...], ["Anotation", "Validation", ...]] with the subcategories you want displayed on the map. This should match the attribute value under the field name in QGIS or the right side of the properties list in the geojson
     // do not delete any commas or brackets unless you have fewer than 4 main categories
-    subcategories: [["Alewife", "Andrew", "South Station", "Kenmore"],
-    ["351", "201"]
+    subcategories: [["Category 1", "Category 2", "Category 3"],
+    ["Category 1", "Category 2", "Category 3"],
+    ["Category 1", "Category 2", "Category 3"],
     // ["Requested", "Approved"],
     // // ["Requested", "Approved"], ["Requested", "Approved"], 
     // ["1", "2", "3", "4"],
@@ -1348,21 +1337,22 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
   ],
 
     // replace [[ "#3a3dee", "#b80f0f" ...], ["#f29d36", ...] with the hex values of the colors you'd like for each subcategory
-    colors: [['#8491A3', '#BCEBCB', '#87D68D', '#358600'],
+    colors: [['#DEB986', '#DB6C79', '#A7112F'],
 
-     ['#E26D5C', '#723D46'],
+     ['#E26D5C', '#723D46','#593D3B' ],
+     ['#748CAB', '#3E5C76', "#5E7CE2"]
     // ["#D496A7", "#5D576B", "#6CD4FF", "#FE938C"], 
     // ['#09d7cd', '#60dc18']
   ],
 
     // replace [3, 4 ...] with the desired line widths for each main category -- units are in pixels
-    linewidths: [3, 4
+    linewidths: [5, 4, 3
     // 4, 4,
       // 5, 8,
     ],
 
     // replace the lat/long coordinates with wherever you'd like your map centered on load in format [Longitude, Latitude] 
-    center_start: [-71.0708429434655, 42.397657604519765],
+    center_start: [-71.07078523875542, 42.35482680948809],
 
     // fill in the following lines if you have a points component of your geojson. maincategory_points is the field name and subcategories_points is if you have multiple attributes for each point
     maincategory_points: ["Merchant Sites"],
@@ -1372,14 +1362,15 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
     // note that there might be more variables here than in the "categories" array above. That is expected. 
     // you can also leave the maincategory out of this array. Just start with the categories you'd like to be unbolded in the popup
     popup_categories: {
-      "Starting Point": "Starting Point",
-      "Route Number": "Route Number"
+      "Layer 1": "Layer 1",
+      "Layer 2": "Layer 2",
+      "Layer 3": "Layer 3"
       // "UberEats_St": "UberEats Status",
       // "Test_St": "Test St",
       // "ADS-MP": "ADS for the Public",
       // "ADS": "ADS",
     },
-    more_info: ["Layer Description 1", "Layer Description 2"
+    more_info: ["Layer Description 1", "Layer Description 2", "Layer Description 3"
       // "UberEats Status shows our approval status specifically with Uber for delivering food",
     //   //      "Roads that are approved for Driverless are permitted to be driven without an operator in the driver's seat under the condition that there is a safety operator in the passenger seat as well as lead and chase vehicles", 
     //   // "ADS-MP stands for Autonomous Driving System for Members of the Public. These are roads that are approved to be driven with members of the public in the vehicle.",
@@ -1390,7 +1381,7 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
   }
 
 
-  document.getElementById("subtitleinfo").innerHTML = "Note: Due to NDA with Motional, this dashboard reflects a different dataset, <br />basemap, and rewritten code. Some features may vary from original";
+  document.getElementById("subtitleinfo").innerHTML = "Note: Due to NDA with Motional, this dashboard reflects a mock dataset, <br /> new basemap, and rewritten code. Some features may vary from original.";
 
   //do not edit after this
 
@@ -1401,7 +1392,7 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
     // style: 'mapbox://styles/lcousins-motional/cl6cbwhav000h14piw8vhru42',
     style: 'mapbox://styles/mapbox/dark-v11',
     center: variables.center_start,
-    zoom: 10,
+    zoom: 12.5,
     scrollZoom: true,
     boxZoom: true,
     doubleClickZoom: true,
@@ -1430,7 +1421,7 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
     // *** REPLACE 'features.geojson' with data file name -- must be a geojson ***
     var testData = map.addSource('Data_Source', {
       'type': 'geojson',
-      'data': 'OSM1.geojson',
+      'data': 'OSMfeatures1.geojson',
       'generateId': true,
     });
     map.addSource('Merchant_Sites', {
@@ -1511,10 +1502,10 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
       }
 
     );
-  //   for (var i = Object.keys(variables.categories).length - 1; i >= 0; i--) {
-  //     map.moveLayer(varnum[i], 'road-label');
-  //   }
-  //   map.moveLayer('clearLayer', 'road-label');
+    // for (var i = Object.keys(variables.categories).length - 1; i >= 0; i--) {
+    //   map.moveLayer(varnum[i], 'road-label');
+    // }
+    // map.moveLayer('clearLayer', 'road-label');
   });
 
   // import { RulerControl } from 'mapbox-gl-controls';
@@ -1945,21 +1936,21 @@ https://cdn.jsdelivr.net/npm/mapbox-gl-controls@2.3.5/lib/controls.min.css
     graphTitle = variables.categories[Object.keys(variables.categories)[i]];
     this.colors = variables.colors[i];
 
-    if (graphTitle == 'Route Number') {
-      these_columns = [Object.keys(variables.categories)[i], Math.round(length_driverless_r), Math.round(length_driverless_a)]
+    if (graphTitle == 'Layer 1') {
+      these_columns = [Object.keys(variables.categories)[i], Math.round(length_11), Math.round(length_12), Math.round(length_13)]
     }
-    else if (graphTitle == 'UberEats Status') {
-      these_columns = [Object.keys(variables.categories)[i], Math.round(length_uber_r), Math.round(length_uber_a)]
+    else if (graphTitle == 'Layer 2') {
+      these_columns = [Object.keys(variables.categories)[i], Math.round(length_21), Math.round(length_22), Math.round(length_23)]
     }
-    else if (graphTitle == 'ADS for the Public') {
-      these_columns = [Object.keys(variables.categories)[i], Math.round(length_adsmp_r), Math.round(length_adsmp_a)]
+    else if (graphTitle == 'Layer 3') {
+      these_columns = [Object.keys(variables.categories)[i], Math.round(length_31), Math.round(length_32), Math.round(length_33)]
     }
-    else if (graphTitle == 'ADS') {
-      these_columns = [Object.keys(variables.categories)[i], Math.round(length_ads_r), Math.round(length_ads_a)]
-    }
-    else if (graphTitle == 'Starting Point') {
-      these_columns = [Object.keys(variables.categories)[i], Math.round(length_rfd), Math.round(length_b), Math.round(length_a), Math.round(length_k)]
-    }
+    // else if (graphTitle == 'ADS') {
+    //   these_columns = [Object.keys(variables.categories)[i], Math.round(length_ads_r), Math.round(length_ads_a)]
+    // }
+    // else if (graphTitle == 'Starting Point') {
+    //   these_columns = [Object.keys(variables.categories)[i], Math.round(length_rfd), Math.round(length_b), Math.round(length_a), Math.round(length_k)]
+    // }
     this.chart.load({
       bindto: '#chart',
       unload: true,    
